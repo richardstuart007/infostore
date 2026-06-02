@@ -24,10 +24,3 @@ export async function fetchDistinctCategories(caller: string): Promise<string[]>
     return []
   }
 }
-
-//----------------------------------------------------------------------------------
-//  normalizeCategory — lowercase and trim category
-//----------------------------------------------------------------------------------
-export function normalizeCategory(category: string): string {
-  return category.toLowerCase().trim()
-}
