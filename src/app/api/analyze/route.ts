@@ -24,7 +24,7 @@ Return ONLY valid JSON with this exact structure (no other text):
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'mistral',
+        model: 'qwen3:8b',
         prompt: prompt,
         stream: false,
         temperature: 0.5
