@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { fetchAllEntries } from '@/src/lib/entries'
+import { fetchAllEntries, deleteEntry } from '@/src/lib/entries'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import type { EntryRow } from '@/src/lib/entries'
@@ -13,6 +13,8 @@ export default function AdminEntriesListPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
+  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -22,6 +24,18 @@ export default function AdminEntriesListPage() {
     }
     load()
   }, [])
+
+  async function handleDelete(entid: number) {
+    setDeleting(true)
+    const success = await deleteEntry(entid, 'AdminEntriesListPage')
+    setDeleting(false)
+    if (success) {
+      setEntries(entries.filter(e => e.ent_entid !== entid))
+      setDeleteConfirmId(null)
+    } else {
+      alert('Failed to delete entry')
+    }
+  }
 
   const allCategories = [...new Set(entries.flatMap(e => e.ent_categories))].sort()
 
@@ -73,7 +87,7 @@ export default function AdminEntriesListPage() {
               <tr className='bg-gray-100 border-b border-gray-300'>
                 <th className='text-left px-4 py-3 font-semibold'>Title</th>
                 <th className='text-left px-4 py-3 font-semibold'>Categories</th>
-                <th className='text-center px-4 py-3 font-semibold w-20'>Action</th>
+                <th className='text-center px-4 py-3 font-semibold w-32'>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -89,13 +103,46 @@ export default function AdminEntriesListPage() {
                       ))}
                     </div>
                   </td>
-                  <td className='px-4 py-3 text-center'>
+                  <td className='px-4 py-3 text-center space-x-2'>
                     <Link
                       href={`/${adminSecret}/dashboard/entries/${entry.ent_entid}`}
                       className='text-blue-600 hover:underline'
                     >
                       Edit
                     </Link>
+                    <button
+                      onClick={() => setDeleteConfirmId(entry.ent_entid)}
+                      className='text-red-600 hover:underline'
+                    >
+                      Delete
+                    </button>
+
+                    {deleteConfirmId === entry.ent_entid && (
+                      <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+                        <div className='bg-white rounded-lg p-6 max-w-sm mx-4'>
+                          <h3 className='text-lg font-bold text-gray-900 mb-2'>Delete Entry?</h3>
+                          <p className='text-gray-600 mb-4'>
+                            This will delete the entry and all related arguments and sources. This cannot be undone.
+                          </p>
+                          <p className='font-semibold text-gray-900 mb-4'>"{entry.ent_title}"</p>
+                          <div className='flex gap-2'>
+                            <button
+                              onClick={() => handleDelete(entry.ent_entid)}
+                              disabled={deleting}
+                              className='px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50'
+                            >
+                              {deleting ? 'Deleting...' : 'Delete'}
+                            </button>
+                            <button
+                              onClick={() => setDeleteConfirmId(null)}
+                              className='px-4 py-2 bg-gray-300 rounded hover:bg-gray-400'
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}
