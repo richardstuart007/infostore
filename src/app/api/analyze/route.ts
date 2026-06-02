@@ -8,12 +8,14 @@ export async function POST(request: Request) {
 
     const prompt = `Analyze this article URL and extract structured information about harmful societal actions: ${url}
 
+IMPORTANT: Include specific names (people, organizations, locations) in the title when available - names are critical for searching.
+
 Extract: publication date (format as YYYY-MM-DD), country/location, author name, and publication/outlet name.
 Categories must be single words only (e.g., "education" not "education policy").
 
 Return ONLY valid JSON with this exact structure (no other text):
 {
-  "title": "concise title capturing the main claim",
+  "title": "specific title including names if available - make it searchable",
   "summary": "one sentence describing the core harm or issue",
   "categories": ["singleword1", "singleword2"],
   "arguments": [
