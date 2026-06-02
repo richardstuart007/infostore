@@ -1,11 +1,13 @@
-'use client'
-
 import { Suspense } from 'react'
-import { useParams } from 'next/navigation'
 
-export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
-  const params = useParams()
-  const adminSecret = params?.admin_secret as string
+export default async function AdminDashboardLayout({
+  children,
+  params
+}: {
+  children: React.ReactNode
+  params: Promise<{ admin_secret: string }>
+}) {
+  const { admin_secret } = await params
 
   return (
     <div className='max-w-7xl mx-auto'>
@@ -13,8 +15,8 @@ export default function AdminDashboardLayout({ children }: { children: React.Rea
         <div className='flex items-center px-4 py-3 gap-8'>
           <h1 className='text-lg font-bold text-gray-900 shrink-0'>WokeWatch Admin</h1>
           <nav className='flex items-center gap-6 text-sm'>
-            <a href={`/${adminSecret}/dashboard`} className='text-gray-600 hover:text-gray-900'>Dashboard</a>
-            <a href={`/${adminSecret}/dashboard/entries`} className='text-gray-600 hover:text-gray-900'>Entries</a>
+            <a href={`/${admin_secret}/dashboard`} className='text-gray-600 hover:text-gray-900'>Dashboard</a>
+            <a href={`/${admin_secret}/dashboard/entries`} className='text-gray-600 hover:text-gray-900'>Entries</a>
           </nav>
         </div>
       </header>
