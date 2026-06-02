@@ -5,7 +5,9 @@ CREATE TABLE tent_entries (
     ent_categories TEXT[] DEFAULT '{}',
     ent_source_url TEXT,
     ent_article_date TEXT,
-    ent_country TEXT
+    ent_country TEXT,
+    ent_author TEXT,
+    ent_publication TEXT
 );
 
 CREATE TABLE targ_arguments (

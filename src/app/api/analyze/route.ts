@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
     const prompt = `Analyze this article URL and extract structured information about harmful societal actions: ${url}
 
-Extract the article publication date and the country/location mentioned. Format date as YYYY-MM-DD if possible.
+Extract: publication date (format as YYYY-MM-DD), country/location, author name, and publication/outlet name.
 
 Return ONLY valid JSON with this exact structure (no other text):
 {
@@ -21,7 +21,9 @@ Return ONLY valid JSON with this exact structure (no other text):
   ],
   "sources": ["${url}", "other url if mentioned"],
   "article_date": "YYYY-MM-DD or original format if cannot parse",
-  "country": "country or location mentioned in article"
+  "country": "country or location mentioned",
+  "author": "author name or author(s)",
+  "publication": "publication/outlet/news organization name"
 }`
 
     const response = await fetch('http://localhost:11434/api/generate', {
@@ -69,7 +71,9 @@ Return ONLY valid JSON with this exact structure (no other text):
         arguments: Array.isArray(analysis.arguments) ? analysis.arguments : [],
         sources: Array.isArray(analysis.sources) ? analysis.sources : [url],
         article_date: analysis.article_date || '',
-        country: analysis.country || ''
+        country: analysis.country || '',
+        author: analysis.author || '',
+        publication: analysis.publication || ''
       })
     } catch (parseError) {
       console.error('JSON parse error:', parseError, 'Text:', responseText)

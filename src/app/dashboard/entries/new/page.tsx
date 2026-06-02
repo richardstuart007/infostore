@@ -17,6 +17,8 @@ interface AnalysisResult {
   sources: string[]
   article_date?: string
   country?: string
+  author?: string
+  publication?: string
 }
 
 export default function NewEntryPage() {
@@ -26,6 +28,8 @@ export default function NewEntryPage() {
   const [sourceUrl, setSourceUrl] = useState('')
   const [articleDate, setArticleDate] = useState('')
   const [country, setCountry] = useState('')
+  const [author, setAuthor] = useState('')
+  const [publication, setPublication] = useState('')
   const [arguments_, setArguments] = useState<Array<{ text: string; relevance: number }>>([])
   const [sources, setSources] = useState<Array<{ url: string; title: string | null }>>([])
   const [availableCategories, setAvailableCategories] = useState<string[]>([])
@@ -73,6 +77,8 @@ export default function NewEntryPage() {
       })))
       setArticleDate(analysis.article_date || '')
       setCountry(analysis.country || '')
+      setAuthor(analysis.author || '')
+      setPublication(analysis.publication || '')
       setSourceUrl(analyzeUrl)
       setAnalyzeUrl('')
     } catch (error) {
@@ -92,7 +98,7 @@ export default function NewEntryPage() {
     setSaving(true)
     const normalizedCategories = categories.map(normalizeCategory)
 
-    const entry = await insertEntry(title, summary, normalizedCategories, sourceUrl, articleDate || null, country || null, 'NewEntryPage')
+    const entry = await insertEntry(title, summary, normalizedCategories, sourceUrl, articleDate || null, country || null, author || null, publication || null, 'NewEntryPage')
     if (!entry) {
       setSaving(false)
       alert('Failed to create entry')
@@ -221,6 +227,26 @@ export default function NewEntryPage() {
               value={country}
               onChange={(e) => setCountry(e.target.value)}
               placeholder='e.g., United States, UK'
+              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            />
+          </div>
+          <div>
+            <label className='block text-sm font-semibold text-gray-900 mb-2'>Author</label>
+            <input
+              type='text'
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              placeholder='e.g., John Smith'
+              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            />
+          </div>
+          <div>
+            <label className='block text-sm font-semibold text-gray-900 mb-2'>Publication</label>
+            <input
+              type='text'
+              value={publication}
+              onChange={(e) => setPublication(e.target.value)}
+              placeholder='e.g., BBC News, Reuters'
               className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>

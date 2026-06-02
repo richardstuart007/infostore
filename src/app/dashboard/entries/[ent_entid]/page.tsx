@@ -72,6 +72,18 @@ export default async function EntryDetailPage({
             <p className='text-gray-700'>{entry.ent_country}</p>
           </div>
         )}
+        {entry.ent_author && (
+          <div>
+            <h2 className='font-semibold text-gray-900 mb-2'>Author</h2>
+            <p className='text-gray-700'>{entry.ent_author}</p>
+          </div>
+        )}
+        {entry.ent_publication && (
+          <div>
+            <h2 className='font-semibold text-gray-900 mb-2'>Publication</h2>
+            <p className='text-gray-700'>{entry.ent_publication}</p>
+          </div>
+        )}
       </div>
 
       {entry.ent_source_url && (

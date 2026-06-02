@@ -59,6 +59,10 @@ export default function AdminEntryEditPage() {
       entry.ent_summary,
       normalizedCategories,
       entry.ent_source_url,
+      entry.ent_article_date,
+      entry.ent_country,
+      entry.ent_author,
+      entry.ent_publication,
       'AdminEntryEditPage'
     )
     setSaving(false)
@@ -168,6 +172,26 @@ export default function AdminEntryEditPage() {
               value={entry.ent_country || ''}
               onChange={(e) => setEntry({ ...entry, ent_country: e.target.value || null })}
               placeholder='e.g., United States, UK'
+              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            />
+          </div>
+          <div>
+            <label className='block text-sm font-semibold text-gray-900 mb-2'>Author</label>
+            <input
+              type='text'
+              value={entry.ent_author || ''}
+              onChange={(e) => setEntry({ ...entry, ent_author: e.target.value || null })}
+              placeholder='e.g., John Smith'
+              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            />
+          </div>
+          <div>
+            <label className='block text-sm font-semibold text-gray-900 mb-2'>Publication</label>
+            <input
+              type='text'
+              value={entry.ent_publication || ''}
+              onChange={(e) => setEntry({ ...entry, ent_publication: e.target.value || null })}
+              placeholder='e.g., BBC News, Reuters'
               className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
