@@ -10,14 +10,14 @@ CREATE TABLE tent_entries (
 
 CREATE TABLE targ_arguments (
     arg_argid SERIAL PRIMARY KEY,
-    arg_entid INTEGER NOT NULL REFERENCES tent_entries(ent_entid),
+    arg_entid INTEGER NOT NULL,
     arg_text TEXT NOT NULL,
     arg_relevance INT DEFAULT 50
 );
 
 CREATE TABLE tsrc_sources (
     src_srcid SERIAL PRIMARY KEY,
-    src_entid INTEGER NOT NULL REFERENCES tent_entries(ent_entid),
+    src_entid INTEGER NOT NULL,
     src_url TEXT NOT NULL,
     src_title TEXT
 );

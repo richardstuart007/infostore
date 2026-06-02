@@ -15,6 +15,8 @@ interface AnalysisResult {
   categories: string[]
   arguments: Array<{ text: string; relevance: number }>
   sources: string[]
+  article_date?: string
+  country?: string
 }
 
 export default function NewEntryPage() {
@@ -69,6 +71,8 @@ export default function NewEntryPage() {
         url,
         title: i === 0 ? 'Original Article' : null
       })))
+      setArticleDate(analysis.article_date || '')
+      setCountry(analysis.country || '')
       setSourceUrl(analyzeUrl)
       setAnalyzeUrl('')
     } catch (error) {
