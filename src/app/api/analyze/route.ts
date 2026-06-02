@@ -1,5 +1,3 @@
-import { Anthropic } from '@anthropic-ai/sdk'
-
 export async function POST(request: Request) {
   try {
     const { url } = await request.json()
@@ -8,19 +6,9 @@ export async function POST(request: Request) {
       return Response.json({ error: 'URL is required' }, { status: 400 })
     }
 
-    const client = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY
-    })
+    const prompt = `You are analyzing an article for a database of social phenomena. Analyze this URL and extract information about harmful societal actions described: ${url}
 
-    const message = await client.messages.create({
-      model: 'claude-opus-4-8',
-      max_tokens: 1024,
-      messages: [
-        {
-          role: 'user',
-          content: `You are analyzing an article for a database of social phenomena. Visit and analyze this URL: ${url}
-
-Extract the following information about harmful societal actions described in the article:
+Extract the following information:
 
 1. title: A concise title capturing the main claim
 2. summary: One sentence describing the core harm or issue
@@ -36,11 +24,27 @@ Return as valid JSON only, with this structure:
   "arguments": [{"text": "string", "relevance": number}],
   "sources": ["string"]
 }`
-        }
-      ]
+
+    const response = await fetch('http://localhost:11434/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'mistral',
+        prompt: prompt,
+        stream: false,
+        temperature: 0.7
+      })
     })
 
-    const responseText = message.content[0].type === 'text' ? message.content[0].text : ''
+    if (!response.ok) {
+      return Response.json(
+        { error: 'Ollama service not available. Make sure Ollama is running: ollama serve' },
+        { status: 503 }
+      )
+    }
+
+    const data = await response.json()
+    const responseText = data.response || ''
 
     try {
       const jsonMatch = responseText.match(/\{[\s\S]*\}/)
