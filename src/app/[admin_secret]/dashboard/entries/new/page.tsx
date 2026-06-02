@@ -52,13 +52,21 @@ export default function AdminNewEntryPage() {
         body: JSON.stringify({ url: analyzeUrl })
       })
 
-      const analysis: AnalysisResult = await response.json()
+      const data = await response.json()
 
-      setTitle(analysis.title)
-      setSummary(analysis.summary)
-      setCategories(analysis.categories.map(normalizeCategory))
-      setArguments(analysis.arguments)
-      setSources(analysis.sources.map((url, i) => ({
+      if (!response.ok) {
+        alert('Analysis failed: ' + (data.error || 'Unknown error'))
+        setAnalyzing(false)
+        return
+      }
+
+      const analysis: AnalysisResult = data
+
+      setTitle(analysis.title || '')
+      setSummary(analysis.summary || '')
+      setCategories((analysis.categories || []).map(normalizeCategory))
+      setArguments(analysis.arguments || [])
+      setSources((analysis.sources || [analyzeUrl]).map((url, i) => ({
         url,
         title: i === 0 ? 'Original Article' : null
       })))
@@ -66,7 +74,7 @@ export default function AdminNewEntryPage() {
       setAnalyzeUrl('')
     } catch (error) {
       console.error('Analysis failed:', error)
-      alert('Failed to analyze URL')
+      alert('Failed to analyze URL: ' + (error as Error).message)
     } finally {
       setAnalyzing(false)
     }

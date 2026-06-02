@@ -6,23 +6,18 @@ export async function POST(request: Request) {
       return Response.json({ error: 'URL is required' }, { status: 400 })
     }
 
-    const prompt = `You are analyzing an article for a database of social phenomena. Analyze this URL and extract information about harmful societal actions described: ${url}
+    const prompt = `Analyze this article URL and extract structured information about harmful societal actions: ${url}
 
-Extract the following information:
-
-1. title: A concise title capturing the main claim
-2. summary: One sentence describing the core harm or issue
-3. categories: 1-3 broad categories relevant to this article (suggest new ones if needed)
-4. arguments: A list of 3-5 key claims from the article, each as one clear sentence. Include a relevance score (1-100) for each.
-5. sources: The original URL plus any other URLs cited in the article
-
-Return as valid JSON only, with this structure:
+Return ONLY valid JSON with this exact structure (no other text):
 {
-  "title": "string",
-  "summary": "string",
-  "categories": ["string"],
-  "arguments": [{"text": "string", "relevance": number}],
-  "sources": ["string"]
+  "title": "concise title capturing the main claim",
+  "summary": "one sentence describing the core harm or issue",
+  "categories": ["category1", "category2"],
+  "arguments": [
+    {"text": "key claim from article", "relevance": 85},
+    {"text": "another key claim", "relevance": 75}
+  ],
+  "sources": ["${url}", "other url if mentioned"]
 }`
 
     const response = await fetch('http://localhost:11434/api/generate', {
@@ -32,7 +27,7 @@ Return as valid JSON only, with this structure:
         model: 'mistral',
         prompt: prompt,
         stream: false,
-        temperature: 0.7
+        temperature: 0.5
       })
     })
 
@@ -46,18 +41,36 @@ Return as valid JSON only, with this structure:
     const data = await response.json()
     const responseText = data.response || ''
 
+    if (!responseText) {
+      return Response.json({ error: 'Empty response from analysis service' }, { status: 500 })
+    }
+
     try {
       const jsonMatch = responseText.match(/\{[\s\S]*\}/)
       if (!jsonMatch) {
-        return Response.json({ error: 'Could not parse analysis response' }, { status: 500 })
+        console.error('Failed to extract JSON from response:', responseText)
+        return Response.json({ error: 'Could not extract JSON from analysis response' }, { status: 500 })
       }
 
       const analysis = JSON.parse(jsonMatch[0])
-      return Response.json(analysis)
+
+      if (!analysis.title || !analysis.summary) {
+        return Response.json({ error: 'Analysis missing required fields (title, summary)' }, { status: 500 })
+      }
+
+      return Response.json({
+        title: analysis.title || '',
+        summary: analysis.summary || '',
+        categories: Array.isArray(analysis.categories) ? analysis.categories : [],
+        arguments: Array.isArray(analysis.arguments) ? analysis.arguments : [],
+        sources: Array.isArray(analysis.sources) ? analysis.sources : [url]
+      })
     } catch (parseError) {
+      console.error('JSON parse error:', parseError, 'Text:', responseText)
       return Response.json({ error: 'Invalid JSON in analysis response' }, { status: 500 })
     }
   } catch (error) {
+    console.error('Analysis error:', error)
     return Response.json(
       { error: 'Analysis failed: ' + (error as Error).message },
       { status: 500 }
