@@ -151,6 +151,28 @@ export default function AdminEntryEditPage() {
           />
         </div>
 
+        <div className='grid grid-cols-2 gap-4'>
+          <div>
+            <label className='block text-sm font-semibold text-gray-900 mb-2'>Article Date</label>
+            <input
+              type='date'
+              value={entry.ent_article_date || ''}
+              onChange={(e) => setEntry({ ...entry, ent_article_date: e.target.value || null })}
+              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            />
+          </div>
+          <div>
+            <label className='block text-sm font-semibold text-gray-900 mb-2'>Country</label>
+            <input
+              type='text'
+              value={entry.ent_country || ''}
+              onChange={(e) => setEntry({ ...entry, ent_country: e.target.value || null })}
+              placeholder='e.g., United States, UK'
+              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            />
+          </div>
+        </div>
+
         <div className='flex gap-2'>
           <button
             onClick={handleSave}

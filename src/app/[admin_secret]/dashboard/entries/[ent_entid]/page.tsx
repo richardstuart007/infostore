@@ -59,6 +59,21 @@ export default async function AdminEntryDetailPage({
         </div>
       )}
 
+      <div className='grid grid-cols-2 gap-6'>
+        {entry.ent_article_date && (
+          <div>
+            <h2 className='font-semibold text-gray-900 mb-2'>Article Date</h2>
+            <p className='text-gray-700'>{entry.ent_article_date}</p>
+          </div>
+        )}
+        {entry.ent_country && (
+          <div>
+            <h2 className='font-semibold text-gray-900 mb-2'>Country</h2>
+            <p className='text-gray-700'>{entry.ent_country}</p>
+          </div>
+        )}
+      </div>
+
       {entry.ent_source_url && (
         <div>
           <h2 className='font-semibold text-gray-900 mb-2'>Source URL</h2>

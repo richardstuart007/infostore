@@ -22,6 +22,8 @@ export default function NewEntryPage() {
   const [summary, setSummary] = useState('')
   const [categories, setCategories] = useState<string[]>([])
   const [sourceUrl, setSourceUrl] = useState('')
+  const [articleDate, setArticleDate] = useState('')
+  const [country, setCountry] = useState('')
   const [arguments_, setArguments] = useState<Array<{ text: string; relevance: number }>>([])
   const [sources, setSources] = useState<Array<{ url: string; title: string | null }>>([])
   const [availableCategories, setAvailableCategories] = useState<string[]>([])
@@ -86,7 +88,7 @@ export default function NewEntryPage() {
     setSaving(true)
     const normalizedCategories = categories.map(normalizeCategory)
 
-    const entry = await insertEntry(title, summary, normalizedCategories, sourceUrl, 'NewEntryPage')
+    const entry = await insertEntry(title, summary, normalizedCategories, sourceUrl, articleDate || null, country || null, 'NewEntryPage')
     if (!entry) {
       setSaving(false)
       alert('Failed to create entry')
@@ -196,6 +198,28 @@ export default function NewEntryPage() {
             onChange={(e) => setSourceUrl(e.target.value)}
             className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
           />
+        </div>
+
+        <div className='grid grid-cols-2 gap-4'>
+          <div>
+            <label className='block text-sm font-semibold text-gray-900 mb-2'>Article Date</label>
+            <input
+              type='date'
+              value={articleDate}
+              onChange={(e) => setArticleDate(e.target.value)}
+              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            />
+          </div>
+          <div>
+            <label className='block text-sm font-semibold text-gray-900 mb-2'>Country</label>
+            <input
+              type='text'
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              placeholder='e.g., United States, UK'
+              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            />
+          </div>
         </div>
 
         <div className='flex gap-2'>

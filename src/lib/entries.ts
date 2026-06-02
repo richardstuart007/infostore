@@ -15,6 +15,8 @@ export interface EntryRow {
   ent_summary: string
   ent_categories: string[]
   ent_source_url: string | null
+  ent_article_date: string | null
+  ent_country: string | null
 }
 
 //----------------------------------------------------------------------------------
@@ -91,6 +93,8 @@ export async function createEntry(
   summary: string,
   categories: string[],
   sourceUrl: string | null,
+  articleDate: string | null,
+  country: string | null,
   caller: string
 ): Promise<EntryRow | null> {
   try {
@@ -101,6 +105,12 @@ export async function createEntry(
     ]
     if (sourceUrl) {
       pairs.push({ column: 'ent_source_url', value: sourceUrl })
+    }
+    if (articleDate) {
+      pairs.push({ column: 'ent_article_date', value: articleDate })
+    }
+    if (country) {
+      pairs.push({ column: 'ent_country', value: country })
     }
 
     const result = await table_write({
@@ -129,6 +139,8 @@ export async function updateEntry(
   summary: string,
   categories: string[],
   sourceUrl: string | null,
+  articleDate: string | null,
+  country: string | null,
   caller: string
 ): Promise<EntryRow | null> {
   try {
@@ -139,6 +151,12 @@ export async function updateEntry(
     ]
     if (sourceUrl) {
       pairs.push({ column: 'ent_source_url', value: sourceUrl })
+    }
+    if (articleDate) {
+      pairs.push({ column: 'ent_article_date', value: articleDate })
+    }
+    if (country) {
+      pairs.push({ column: 'ent_country', value: country })
     }
 
     const result = await table_update({
