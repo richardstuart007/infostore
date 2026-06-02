@@ -1,6 +1,6 @@
 'use server'
 
-import { table_query } from 'nextjs-shared/table_fetch'
+import { table_query } from 'nextjs-shared/table_query'
 import { write_Logging } from 'nextjs-shared/write_logging'
 
 //----------------------------------------------------------------------------------

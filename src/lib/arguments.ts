@@ -1,6 +1,9 @@
 'use server'
 
-import { table_fetch, table_write, table_update, table_delete } from 'nextjs-shared/table_fetch'
+import { table_fetch } from 'nextjs-shared/table_fetch'
+import { table_write } from 'nextjs-shared/table_write'
+import { table_update } from 'nextjs-shared/table_update'
+import { table_delete } from 'nextjs-shared/table_delete'
 import { write_Logging } from 'nextjs-shared/write_logging'
 import type { ColumnValuePair } from 'nextjs-shared/structures'
 
