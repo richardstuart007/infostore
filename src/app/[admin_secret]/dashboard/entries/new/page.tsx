@@ -53,7 +53,17 @@ export default function AdminNewEntryPage() {
     if (!analyzeUrl) return
 
     setAnalyzing(true)
+
     try {
+      const { checkDuplicateUrl } = await import('@/src/lib/entries')
+      const isDuplicate = await checkDuplicateUrl(analyzeUrl, 'AdminNewEntryPage')
+
+      if (isDuplicate) {
+        alert('This URL already exists in the database. Please use a different URL.')
+        setAnalyzing(false)
+        return
+      }
+
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
