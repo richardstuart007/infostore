@@ -88,6 +88,36 @@ export async function fetchEntriesCount(caller: string): Promise<number> {
 }
 
 //----------------------------------------------------------------------------------
+//  checkDuplicateUrl — check if URL already exists
+//----------------------------------------------------------------------------------
+export async function checkDuplicateUrl(sourceUrl: string, caller: string): Promise<boolean> {
+  if (!sourceUrl) return false
+  try {
+    const existing = await fetchBySourceUrl(sourceUrl, caller)
+    return existing !== null
+  } catch {
+    return false
+  }
+}
+
+//----------------------------------------------------------------------------------
+//  fetchBySourceUrl — fetch entry by source URL
+//----------------------------------------------------------------------------------
+async function fetchBySourceUrl(sourceUrl: string, caller: string): Promise<EntryRow | null> {
+  try {
+    const rows = await table_fetch({
+      caller,
+      table: 'tent_entries',
+      whereColumnValuePairs: [{ column: 'ent_source_url', value: sourceUrl, operator: '=' }],
+      skipCache: true
+    })
+    return (rows[0] as EntryRow) || null
+  } catch (error) {
+    return null
+  }
+}
+
+//----------------------------------------------------------------------------------
 //  createEntry — insert new entry
 //----------------------------------------------------------------------------------
 export async function createEntry(
@@ -102,6 +132,16 @@ export async function createEntry(
   caller: string
 ): Promise<EntryRow | null> {
   try {
+    if (sourceUrl && await checkDuplicateUrl(sourceUrl, caller)) {
+      await write_Logging({
+        lg_functionname: 'createEntry',
+        lg_msg: 'Duplicate URL rejected: ' + sourceUrl,
+        lg_caller: caller,
+        lg_severity: 'W'
+      })
+      return null
+    }
+
     const pairs: ColumnValuePair[] = [
       { column: 'ent_title', value: title },
       { column: 'ent_summary', value: summary },

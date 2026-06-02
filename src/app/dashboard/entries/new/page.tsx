@@ -101,7 +101,11 @@ export default function NewEntryPage() {
     const entry = await insertEntry(title, summary, normalizedCategories, sourceUrl, articleDate || null, country || null, author || null, publication || null, 'NewEntryPage')
     if (!entry) {
       setSaving(false)
-      alert('Failed to create entry')
+      if (sourceUrl) {
+        alert('Entry with this URL already exists. Please use a different URL.')
+      } else {
+        alert('Failed to create entry')
+      }
       return
     }
 

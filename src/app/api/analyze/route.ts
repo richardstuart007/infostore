@@ -34,7 +34,7 @@ Return ONLY valid JSON with this exact structure (no other text):
         model: 'qwen3:8b',
         prompt: prompt,
         stream: false,
-        temperature: 0.5
+        temperature: 0
       })
     })
 
