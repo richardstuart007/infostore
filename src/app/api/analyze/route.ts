@@ -9,12 +9,13 @@ export async function POST(request: Request) {
     const prompt = `Analyze this article URL and extract structured information about harmful societal actions: ${url}
 
 Extract: publication date (format as YYYY-MM-DD), country/location, author name, and publication/outlet name.
+Categories must be single words only (e.g., "education" not "education policy").
 
 Return ONLY valid JSON with this exact structure (no other text):
 {
   "title": "concise title capturing the main claim",
   "summary": "one sentence describing the core harm or issue",
-  "categories": ["category1", "category2"],
+  "categories": ["singleword1", "singleword2"],
   "arguments": [
     {"text": "key claim from article", "relevance": 85},
     {"text": "another key claim", "relevance": 75}

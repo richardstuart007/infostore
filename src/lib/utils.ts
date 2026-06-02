@@ -1,6 +1,8 @@
 //----------------------------------------------------------------------------------
-//  normalizeCategory — lowercase and trim category
+//  normalizeCategory — lowercase, trim, and extract first word (single-word categories)
 //----------------------------------------------------------------------------------
 export function normalizeCategory(category: string): string {
-  return category.toLowerCase().trim()
+  const trimmed = category.toLowerCase().trim()
+  const firstWord = trimmed.split(/\s+/)[0]
+  return firstWord
 }
