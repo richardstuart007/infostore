@@ -7,7 +7,7 @@ import { table_delete } from 'nextjs-shared/table_delete'
 import { table_count } from 'nextjs-shared/table_count'
 import { table_query } from 'nextjs-shared/table_query'
 import { write_Logging } from 'nextjs-shared/write_logging'
-import type { ColumnValuePair } from 'nextjs-shared/structures'
+import type { WriteColumnValuePair } from 'nextjs-shared/structures'
 
 export interface EntryRow {
   ent_entid: number
@@ -142,7 +142,7 @@ export async function createEntry(
       return null
     }
 
-    const pairs: ColumnValuePair[] = [
+    const pairs: WriteColumnValuePair[] = [
       { column: 'ent_title', value: title },
       { column: 'ent_summary', value: summary },
       { column: 'ent_categories', value: categories },
@@ -196,7 +196,7 @@ export async function updateEntry(
   caller: string
 ): Promise<EntryRow | null> {
   try {
-    const pairs: ColumnValuePair[] = [
+    const pairs: WriteColumnValuePair[] = [
       { column: 'ent_title', value: title },
       { column: 'ent_summary', value: summary },
       { column: 'ent_categories', value: categories }
@@ -221,7 +221,7 @@ export async function updateEntry(
       caller,
       table: 'tent_entries',
       columnValuePairs: pairs,
-      whereColumnValuePairs: [{ column: 'ent_entid', value: entid, operator: '=' }]
+      whereColumnValuePairs: [{ column: 'ent_entid', value: entid }]
     })
     return (result[0] as EntryRow) || null
   } catch (error) {

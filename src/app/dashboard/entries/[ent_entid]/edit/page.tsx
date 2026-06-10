@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import { fetchEntryById, updateEntry, deleteEntry } from '@/src/lib/entries'
 import { fetchArgumentsByEntry, createArgument, updateArgument, deleteArgument } from '@/src/lib/arguments'
 import { fetchSourcesByEntry, createSource, updateSource, deleteSource } from '@/src/lib/sources'
-import { fetchDistinctCategories, normalizeCategory } from '@/src/lib/categories'
+import { fetchDistinctCategories } from '@/src/lib/categories'
+import { normalizeCategory } from '@/src/lib/utils'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { EntryRow } from '@/src/lib/entries'
@@ -51,6 +52,7 @@ export default function EntryEditPage({ params }: { params: Promise<{ ent_entid:
   }
 
   async function handleSave() {
+    if (!entry || entid === null) return
     setSaving(true)
     const normalizedCategories = entry.ent_categories.map(normalizeCategory)
     const updated = await updateEntry(
@@ -59,6 +61,10 @@ export default function EntryEditPage({ params }: { params: Promise<{ ent_entid:
       entry.ent_summary,
       normalizedCategories,
       entry.ent_source_url,
+      entry.ent_article_date,
+      entry.ent_country,
+      entry.ent_author,
+      entry.ent_publication,
       'EntryEditPage'
     )
     setSaving(false)
@@ -68,6 +74,7 @@ export default function EntryEditPage({ params }: { params: Promise<{ ent_entid:
   }
 
   async function handleDelete() {
+    if (entid === null) return
     const success = await deleteEntry(entid, 'EntryEditPage')
     if (success) {
       router.push('/dashboard/entries')

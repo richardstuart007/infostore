@@ -51,6 +51,7 @@ export default function AdminEntryEditPage() {
   }
 
   async function handleSave() {
+    if (!entry) return
     setSaving(true)
     const normalizedCategories = entry.ent_categories.map(normalizeCategory)
     const updated = await updateEntry(

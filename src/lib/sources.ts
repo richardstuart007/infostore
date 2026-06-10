@@ -5,7 +5,7 @@ import { table_write } from 'nextjs-shared/table_write'
 import { table_update } from 'nextjs-shared/table_update'
 import { table_delete } from 'nextjs-shared/table_delete'
 import { write_Logging } from 'nextjs-shared/write_logging'
-import type { ColumnValuePair } from 'nextjs-shared/structures'
+import type { WriteColumnValuePair } from 'nextjs-shared/structures'
 
 export interface SourceRow {
   src_srcid: number
@@ -47,7 +47,7 @@ export async function createSource(
   caller: string
 ): Promise<SourceRow | null> {
   try {
-    const pairs: ColumnValuePair[] = [
+    const pairs: WriteColumnValuePair[] = [
       { column: 'src_entid', value: entid },
       { column: 'src_url', value: url }
     ]
@@ -82,7 +82,7 @@ export async function updateSource(
   caller: string
 ): Promise<SourceRow | null> {
   try {
-    const pairs: ColumnValuePair[] = [
+    const pairs: WriteColumnValuePair[] = [
       { column: 'src_url', value: url }
     ]
     if (title) {
@@ -93,7 +93,7 @@ export async function updateSource(
       caller,
       table: 'tsrc_sources',
       columnValuePairs: pairs,
-      whereColumnValuePairs: [{ column: 'src_srcid', value: srcid, operator: '=' }]
+      whereColumnValuePairs: [{ column: 'src_srcid', value: srcid }]
     })
     return (result[0] as SourceRow) || null
   } catch (error) {

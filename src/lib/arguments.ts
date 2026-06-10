@@ -5,7 +5,6 @@ import { table_write } from 'nextjs-shared/table_write'
 import { table_update } from 'nextjs-shared/table_update'
 import { table_delete } from 'nextjs-shared/table_delete'
 import { write_Logging } from 'nextjs-shared/write_logging'
-import type { ColumnValuePair } from 'nextjs-shared/structures'
 
 export interface ArgumentRow {
   arg_argid: number
@@ -86,7 +85,7 @@ export async function updateArgument(
         { column: 'arg_text', value: text },
         { column: 'arg_relevance', value: relevance }
       ],
-      whereColumnValuePairs: [{ column: 'arg_argid', value: argid, operator: '=' }]
+      whereColumnValuePairs: [{ column: 'arg_argid', value: argid }]
     })
     return (result[0] as ArgumentRow) || null
   } catch (error) {
