@@ -1,7 +1,7 @@
 export default function HomePage() {
   return (
     <div className='max-w-4xl mx-auto'>
-      <h1 className='text-3xl font-bold mb-4'>Welcome to WokeWatch</h1>
+      <h1 className='text-3xl font-bold mb-4'>Welcome to InfoStore</h1>
       <p className='text-gray-600 mb-6'>
         A database of documented examples of harmful societal actions, with coherent arguments and source links.
       </p>

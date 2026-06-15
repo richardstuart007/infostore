@@ -4,7 +4,7 @@ import { table_fetch } from 'nextjs-shared/table_fetch'
 import { table_write } from 'nextjs-shared/table_write'
 import { table_update } from 'nextjs-shared/table_update'
 import { table_delete } from 'nextjs-shared/table_delete'
-import { write_Logging } from 'nextjs-shared/write_logging'
+import { write_logging } from 'nextjs-shared/write_logging'
 
 export interface ArgumentRow {
   arg_argid: number
@@ -27,7 +27,7 @@ export async function fetchArgumentsByEntry(entid: number, caller: string): Prom
     })
     return rows as ArgumentRow[]
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'fetchArgumentsByEntry',
       lg_msg: 'Failed to fetch arguments: ' + (error as Error).message,
       lg_caller: caller,
@@ -58,7 +58,7 @@ export async function createArgument(
     })
     return (result[0] as ArgumentRow) || null
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'createArgument',
       lg_msg: 'Failed to create argument: ' + (error as Error).message,
       lg_caller: caller,
@@ -89,7 +89,7 @@ export async function updateArgument(
     })
     return (result[0] as ArgumentRow) || null
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'updateArgument',
       lg_msg: 'Failed to update argument: ' + (error as Error).message,
       lg_caller: caller,
@@ -111,7 +111,7 @@ export async function deleteArgument(argid: number, caller: string): Promise<boo
     })
     return true
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'deleteArgument',
       lg_msg: 'Failed to delete argument: ' + (error as Error).message,
       lg_caller: caller,

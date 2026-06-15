@@ -1,7 +1,7 @@
 'use server'
 
 import { table_query } from 'nextjs-shared/table_query'
-import { write_Logging } from 'nextjs-shared/write_logging'
+import { write_logging } from 'nextjs-shared/write_logging'
 
 //----------------------------------------------------------------------------------
 //  fetchDistinctCategories — get all unique categories across entries
@@ -15,7 +15,7 @@ export async function fetchDistinctCategories(caller: string): Promise<string[]>
     })
     return result.map((row: { category: string }) => row.category).filter(Boolean)
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'fetchDistinctCategories',
       lg_msg: 'Failed to fetch categories: ' + (error as Error).message,
       lg_caller: caller,

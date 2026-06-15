@@ -6,7 +6,7 @@ import { table_update } from 'nextjs-shared/table_update'
 import { table_delete } from 'nextjs-shared/table_delete'
 import { table_count } from 'nextjs-shared/table_count'
 import { table_query } from 'nextjs-shared/table_query'
-import { write_Logging } from 'nextjs-shared/write_logging'
+import { write_logging } from 'nextjs-shared/write_logging'
 import type { WriteColumnValuePair } from 'nextjs-shared/structures'
 
 export interface EntryRow {
@@ -33,7 +33,7 @@ export async function fetchAllEntries(caller: string): Promise<EntryRow[]> {
     })
     return rows as EntryRow[]
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'fetchAllEntries',
       lg_msg: 'Failed to fetch entries: ' + (error as Error).message,
       lg_caller: caller,
@@ -56,7 +56,7 @@ export async function fetchEntryById(entid: number, caller: string): Promise<Ent
     })
     return (rows[0] as EntryRow) || null
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'fetchEntryById',
       lg_msg: 'Failed to fetch entry: ' + (error as Error).message,
       lg_caller: caller,
@@ -77,7 +77,7 @@ export async function fetchEntriesCount(caller: string): Promise<number> {
     })
     return count
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'fetchEntriesCount',
       lg_msg: 'Failed to count entries: ' + (error as Error).message,
       lg_caller: caller,
@@ -133,7 +133,7 @@ export async function createEntry(
 ): Promise<EntryRow | null> {
   try {
     if (sourceUrl && await checkDuplicateUrl(sourceUrl, caller)) {
-      await write_Logging({
+      await write_logging({
         lg_functionname: 'createEntry',
         lg_msg: 'Duplicate URL rejected: ' + sourceUrl,
         lg_caller: caller,
@@ -170,7 +170,7 @@ export async function createEntry(
     })
     return (result[0] as EntryRow) || null
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'createEntry',
       lg_msg: 'Failed to create entry: ' + (error as Error).message,
       lg_caller: caller,
@@ -225,7 +225,7 @@ export async function updateEntry(
     })
     return (result[0] as EntryRow) || null
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'updateEntry',
       lg_msg: 'Failed to update entry: ' + (error as Error).message,
       lg_caller: caller,
@@ -260,7 +260,7 @@ export async function deleteEntry(entid: number, caller: string): Promise<boolea
 
     return true
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'deleteEntry',
       lg_msg: 'Failed to delete entry: ' + (error as Error).message,
       lg_caller: caller,

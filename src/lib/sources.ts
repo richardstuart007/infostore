@@ -4,7 +4,7 @@ import { table_fetch } from 'nextjs-shared/table_fetch'
 import { table_write } from 'nextjs-shared/table_write'
 import { table_update } from 'nextjs-shared/table_update'
 import { table_delete } from 'nextjs-shared/table_delete'
-import { write_Logging } from 'nextjs-shared/write_logging'
+import { write_logging } from 'nextjs-shared/write_logging'
 import type { WriteColumnValuePair } from 'nextjs-shared/structures'
 
 export interface SourceRow {
@@ -27,7 +27,7 @@ export async function fetchSourcesByEntry(entid: number, caller: string): Promis
     })
     return rows as SourceRow[]
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'fetchSourcesByEntry',
       lg_msg: 'Failed to fetch sources: ' + (error as Error).message,
       lg_caller: caller,
@@ -62,7 +62,7 @@ export async function createSource(
     })
     return (result[0] as SourceRow) || null
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'createSource',
       lg_msg: 'Failed to create source: ' + (error as Error).message,
       lg_caller: caller,
@@ -97,7 +97,7 @@ export async function updateSource(
     })
     return (result[0] as SourceRow) || null
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'updateSource',
       lg_msg: 'Failed to update source: ' + (error as Error).message,
       lg_caller: caller,
@@ -119,7 +119,7 @@ export async function deleteSource(srcid: number, caller: string): Promise<boole
     })
     return true
   } catch (error) {
-    await write_Logging({
+    await write_logging({
       lg_functionname: 'deleteSource',
       lg_msg: 'Failed to delete source: ' + (error as Error).message,
       lg_caller: caller,
