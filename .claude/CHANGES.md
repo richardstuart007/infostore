@@ -1,13 +1,4 @@
-# Changes — 2026-06-15
+# Changes — infostore
 
-## src/lib/arguments.ts
-- Renamed import and all call sites: `write_Logging` → `write_logging`
-
-## src/lib/sources.ts
-- Renamed import and all call sites: `write_Logging` → `write_logging`
-
-## src/lib/entries.ts
-- Renamed import and all call sites: `write_Logging` → `write_logging`
-
-## src/lib/categories.ts
-- Renamed import and all call sites: `write_Logging` → `write_logging`
+## package.json
+- Removed `clsx` from dependencies — was listed but never imported anywhere in src/
