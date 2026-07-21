@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { fetchAllEntries } from '@/src/lib/entries'
 import Link from 'next/link'
 import type { EntryRow } from '@/src/lib/entries'
+import { MyInput } from 'nextjs-shared/MyInput'
+import MySelect from 'nextjs-shared/MySelect'
 
 export default function EntriesListPage() {
   const [entries, setEntries] = useState<EntryRow[]>([])
@@ -42,23 +44,23 @@ export default function EntriesListPage() {
       </div>
 
       <div className='flex gap-4'>
-        <input
+        <MyInput
           type='text'
           placeholder='Search by title...'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className='flex-1 px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+          overrideClass='flex-1 h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
         />
-        <select
+        <MySelect
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className='px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+          overrideClass='w-auto md:w-auto h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
         >
           <option value=''>All Categories</option>
           {allCategories.map((cat) => (
             <option key={cat} value={cat}>{cat}</option>
           ))}
-        </select>
+        </MySelect>
       </div>
 
       {filtered.length === 0 ? (

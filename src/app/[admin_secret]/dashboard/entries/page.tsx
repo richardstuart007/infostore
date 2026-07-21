@@ -5,6 +5,17 @@ import { fetchAllEntries, deleteEntry } from '@/src/lib/entries'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import type { EntryRow } from '@/src/lib/entries'
+import { MyInput } from 'nextjs-shared/MyInput'
+import { MyButton } from 'nextjs-shared/MyButton'
+import { MyConfirmDialog, type ConfirmDialogInt } from 'nextjs-shared/MyConfirmDialog'
+import MyCheckBox from 'nextjs-shared/MyCheckbox'
+
+const CONFIRM_DIALOG_INITIAL: ConfirmDialogInt = {
+  isOpen: false,
+  title: '',
+  subTitle: '',
+  onConfirm: () => {}
+}
 
 export default function AdminEntriesListPage() {
   const params = useParams()
@@ -15,8 +26,7 @@ export default function AdminEntriesListPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
-  const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null)
-  const [deleting, setDeleting] = useState(false)
+  const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogInt>(CONFIRM_DIALOG_INITIAL)
 
   useEffect(() => {
     async function load() {
@@ -28,15 +38,25 @@ export default function AdminEntriesListPage() {
   }, [])
 
   async function handleDelete(entid: number) {
-    setDeleting(true)
     const success = await deleteEntry(entid, 'AdminEntriesListPage')
-    setDeleting(false)
     if (success) {
       setEntries(entries.filter(e => e.ent_entid !== entid))
-      setDeleteConfirmId(null)
     } else {
       alert('Failed to delete entry')
     }
+  }
+
+  function openDeleteConfirm(entry: EntryRow) {
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Delete Entry?',
+      subTitle: 'This will delete the entry and all related arguments and sources. This cannot be undone.',
+      line1: `"${entry.ent_title}"`,
+      onConfirm: async () => {
+        setConfirmDialog(d => ({ ...d, isOpen: false }))
+        await handleDelete(entry.ent_entid)
+      }
+    })
   }
 
   const allCategories = [...new Set(entries.flatMap(e => e.ent_categories))].sort()
@@ -69,86 +89,60 @@ export default function AdminEntriesListPage() {
       </div>
 
       <div className='space-y-4'>
-        <input
+        <MyInput
           type='text'
           placeholder='Search by title...'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+          overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
         />
 
         <div className='grid grid-cols-4 gap-4'>
           <div>
-            <label className='block text-sm font-semibold text-gray-900 mb-2'>Categories</label>
-            <div className='border border-gray-300 rounded p-2 max-h-40 overflow-y-auto'>
-              {allCategories.length === 0 ? (
-                <p className='text-gray-500 text-sm'>No categories</p>
-              ) : (
-                allCategories.map((cat) => (
-                  <label key={cat} className='flex items-center gap-2 mb-2'>
-                    <input
-                      type='checkbox'
-                      checked={selectedCategories.includes(cat)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedCategories([...selectedCategories, cat])
-                        } else {
-                          setSelectedCategories(selectedCategories.filter(c => c !== cat))
-                        }
-                      }}
-                      className='cursor-pointer'
-                    />
-                    <span className='text-sm'>{cat}</span>
-                  </label>
-                ))
-              )}
-            </div>
+            <MyCheckBox
+              label='Categories'
+              name='categories'
+              selectedOptions={selectedCategories}
+              setSelectedOptions={(v) => setSelectedCategories(v as string[])}
+              options={allCategories.map(cat => ({ value: cat, label: cat }))}
+              searchEnabled={false}
+              showSelectedCount={false}
+              showResortButton={false}
+              defaultClass_Container='border border-gray-300 rounded p-2 max-h-40 overflow-y-auto w-full'
+            />
           </div>
 
           <div>
-            <label className='block text-sm font-semibold text-gray-900 mb-2'>Countries</label>
-            <div className='border border-gray-300 rounded p-2 max-h-40 overflow-y-auto'>
-              {allCountries.length === 0 ? (
-                <p className='text-gray-500 text-sm'>No countries</p>
-              ) : (
-                allCountries.map((country) => (
-                  <label key={country} className='flex items-center gap-2 mb-2'>
-                    <input
-                      type='checkbox'
-                      checked={selectedCountries.includes(country)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setSelectedCountries([...selectedCountries, country])
-                        } else {
-                          setSelectedCountries(selectedCountries.filter(c => c !== country))
-                        }
-                      }}
-                      className='cursor-pointer'
-                    />
-                    <span className='text-sm'>{country}</span>
-                  </label>
-                ))
-              )}
-            </div>
+            <MyCheckBox
+              label='Countries'
+              name='countries'
+              selectedOptions={selectedCountries}
+              setSelectedOptions={(v) => setSelectedCountries(v as string[])}
+              options={allCountries.map(country => ({ value: country, label: country }))}
+              searchEnabled={false}
+              showSelectedCount={false}
+              showResortButton={false}
+              defaultClass_Container='border border-gray-300 rounded p-2 max-h-40 overflow-y-auto w-full'
+            />
           </div>
 
           <div>
             <label className='block text-sm font-semibold text-gray-900 mb-2'>Date From</label>
-            <input
+            <MyInput
               type='date'
               value={dateFrom}
               onChange={(e) => setDateFrom(e.target.value)}
-              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+              overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
 
           <div>
             <label className='block text-sm font-semibold text-gray-900 mb-2'>Date To</label>
-            <input
+            <MyInput
               type='date'
               value={dateTo}
               onChange={(e) => setDateTo(e.target.value)}
-              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+              overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
         </div>
@@ -190,39 +184,12 @@ export default function AdminEntriesListPage() {
                     >
                       Edit
                     </Link>
-                    <button
-                      onClick={() => setDeleteConfirmId(entry.ent_entid)}
-                      className='text-red-600 hover:underline'
+                    <MyButton
+                      onClick={() => openDeleteConfirm(entry)}
+                      overrideClass='h-auto md:h-auto px-0 md:px-0 bg-transparent hover:bg-transparent text-red-600 hover:underline'
                     >
                       Delete
-                    </button>
-
-                    {deleteConfirmId === entry.ent_entid && (
-                      <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-                        <div className='bg-white rounded-lg p-6 max-w-sm mx-4'>
-                          <h3 className='text-lg font-bold text-gray-900 mb-2'>Delete Entry?</h3>
-                          <p className='text-gray-600 mb-4'>
-                            This will delete the entry and all related arguments and sources. This cannot be undone.
-                          </p>
-                          <p className='font-semibold text-gray-900 mb-4'>"{entry.ent_title}"</p>
-                          <div className='flex gap-2'>
-                            <button
-                              onClick={() => handleDelete(entry.ent_entid)}
-                              disabled={deleting}
-                              className='px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50'
-                            >
-                              {deleting ? 'Deleting...' : 'Delete'}
-                            </button>
-                            <button
-                              onClick={() => setDeleteConfirmId(null)}
-                              className='px-4 py-2 bg-gray-300 rounded hover:bg-gray-400'
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    </MyButton>
                   </td>
                 </tr>
               ))}
@@ -230,6 +197,8 @@ export default function AdminEntriesListPage() {
           </table>
         </div>
       )}
+
+      <MyConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />
     </div>
   )
 }

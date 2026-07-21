@@ -65,3 +65,12 @@ Env files: `.env.locallocal` and `.env.localprod`. The selected env is copied to
 - `ent_categories` is a Postgres `TEXT[]` column — use `unnest()` for distinct value queries
 - Admin access is via a dynamic route segment `[admin_secret]` — the secret value comes from an env var
 - Duplicate URL detection runs on entry creation (`checkDuplicateUrl()`)
+
+## Schema file
+
+`scripts/schema.sql` is the single source of truth for the database structure. Every new table and index must be added here.
+
+## Silent file updates — never ask permission
+
+**PLAN.md and CHANGES.md are always updated silently.**  
+Never ask before checking off a step in `.claude/PLAN.md` or appending to `.claude/CHANGES.md`. These are mechanical parts of execution — no confirmation needed.

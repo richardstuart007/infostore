@@ -8,6 +8,10 @@ import { fetchDistinctCategories } from '@/src/lib/categories'
 import { normalizeCategory } from '@/src/lib/utils'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { MyInput } from 'nextjs-shared/MyInput'
+import { MyTextarea } from 'nextjs-shared/MyTextarea'
+import MySelect from 'nextjs-shared/MySelect'
+import { MyButton } from 'nextjs-shared/MyButton'
 
 interface AnalysisResult {
   title: string
@@ -145,41 +149,41 @@ export default function NewEntryPage() {
       <div className='bg-blue-50 border border-blue-200 rounded-lg p-6'>
         <h2 className='font-semibold text-blue-900 mb-4'>Analyze Article URL</h2>
         <div className='flex gap-2'>
-          <input
+          <MyInput
             type='url'
             value={analyzeUrl}
             onChange={(e) => setAnalyzeUrl(e.target.value)}
             placeholder='https://example.com/article'
-            className='flex-1 px-4 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            overrideClass='flex-1 h-auto md:h-auto px-4 md:px-4 py-2 rounded border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
           />
-          <button
+          <MyButton
             onClick={handleAnalyze}
             disabled={analyzing}
-            className='px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50'
+            overrideClass='h-auto md:h-auto px-6 md:px-6 py-2 rounded bg-blue-600 hover:bg-blue-700 disabled:opacity-50'
           >
             {analyzing ? 'Analyzing...' : 'Analyze'}
-          </button>
+          </MyButton>
         </div>
       </div>
 
       <div className='bg-white border border-gray-200 rounded-lg p-6 space-y-6'>
         <div>
           <label className='block text-sm font-semibold text-gray-900 mb-2'>Title *</label>
-          <input
+          <MyInput
             type='text'
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
           />
         </div>
 
         <div>
           <label className='block text-sm font-semibold text-gray-900 mb-2'>Summary *</label>
-          <textarea
+          <MyTextarea
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
             rows={4}
-            className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            overrideClass='w-full h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
           />
         </div>
 
@@ -189,97 +193,97 @@ export default function NewEntryPage() {
             {categories.map((cat) => (
               <div key={cat} className='inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded'>
                 {cat}
-                <button
+                <MyButton
                   onClick={() => setCategories(categories.filter(c => c !== cat))}
-                  className='text-blue-600 hover:text-blue-900 font-bold'
+                  overrideClass='h-auto md:h-auto px-0 md:px-0 bg-transparent hover:bg-transparent text-blue-600 hover:text-blue-900 font-bold'
                 >
                   ×
-                </button>
+                </MyButton>
               </div>
             ))}
           </div>
-          <select
+          <MySelect
             onChange={(e) => {
               if (e.target.value && !categories.includes(e.target.value)) {
                 setCategories([...categories, e.target.value])
               }
               e.target.value = ''
             }}
-            className='px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            overrideClass='w-auto md:w-auto h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
           >
             <option value=''>Add category...</option>
             {availableCategories.map((cat) => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
-          </select>
+          </MySelect>
         </div>
 
         <div>
           <label className='block text-sm font-semibold text-gray-900 mb-2'>Source URL</label>
-          <input
+          <MyInput
             type='url'
             value={sourceUrl}
             onChange={(e) => setSourceUrl(e.target.value)}
-            className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
           />
         </div>
 
         <div className='grid grid-cols-2 gap-4'>
           <div>
             <label className='block text-sm font-semibold text-gray-900 mb-2'>Article Date</label>
-            <input
+            <MyInput
               type='date'
               value={articleDate}
               onChange={(e) => setArticleDate(e.target.value)}
-              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+              overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
           <div>
             <label className='block text-sm font-semibold text-gray-900 mb-2'>Country</label>
-            <input
+            <MyInput
               type='text'
               value={country}
               onChange={(e) => setCountry(e.target.value)}
               placeholder='e.g., United States, UK'
-              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+              overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
           <div>
             <label className='block text-sm font-semibold text-gray-900 mb-2'>Author</label>
-            <input
+            <MyInput
               type='text'
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
               placeholder='e.g., John Smith'
-              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+              overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
           <div>
             <label className='block text-sm font-semibold text-gray-900 mb-2'>Publication</label>
-            <input
+            <MyInput
               type='text'
               value={publication}
               onChange={(e) => setPublication(e.target.value)}
               placeholder='e.g., BBC News, Reuters'
-              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+              overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
         </div>
 
         <div className='flex gap-2'>
-          <button
+          <MyButton
             onClick={handleSave}
             disabled={saving}
-            className='px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50'
+            overrideClass='h-auto md:h-auto px-6 md:px-6 py-2 rounded bg-blue-600 hover:bg-blue-700 disabled:opacity-50'
           >
             {saving ? 'Creating...' : 'Create Entry'}
-          </button>
-          <button
+          </MyButton>
+          <MyButton
             onClick={() => router.push('/dashboard/entries')}
-            className='px-6 py-2 bg-gray-300 text-gray-900 rounded hover:bg-gray-400'
+            overrideClass='h-auto md:h-auto px-6 md:px-6 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-900'
           >
             Cancel
-          </button>
+          </MyButton>
         </div>
       </div>
 

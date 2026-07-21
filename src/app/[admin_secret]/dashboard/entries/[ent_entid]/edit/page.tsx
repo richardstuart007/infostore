@@ -11,6 +11,10 @@ import Link from 'next/link'
 import type { EntryRow } from '@/src/lib/entries'
 import type { ArgumentRow } from '@/src/lib/arguments'
 import type { SourceRow } from '@/src/lib/sources'
+import { MyInput } from 'nextjs-shared/MyInput'
+import { MyTextarea } from 'nextjs-shared/MyTextarea'
+import MySelect from 'nextjs-shared/MySelect'
+import { MyButton } from 'nextjs-shared/MyButton'
 
 export default function AdminEntryEditPage() {
   const params = useParams()
@@ -91,21 +95,21 @@ export default function AdminEntryEditPage() {
       <div className='bg-white border border-gray-200 rounded-lg p-6 space-y-6'>
         <div>
           <label className='block text-sm font-semibold text-gray-900 mb-2'>Title</label>
-          <input
+          <MyInput
             type='text'
             value={entry.ent_title}
             onChange={(e) => setEntry({ ...entry, ent_title: e.target.value })}
-            className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
           />
         </div>
 
         <div>
           <label className='block text-sm font-semibold text-gray-900 mb-2'>Summary</label>
-          <textarea
+          <MyTextarea
             value={entry.ent_summary}
             onChange={(e) => setEntry({ ...entry, ent_summary: e.target.value })}
             rows={4}
-            className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            overrideClass='w-full h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
           />
         </div>
 
@@ -115,19 +119,19 @@ export default function AdminEntryEditPage() {
             {entry.ent_categories.map((cat) => (
               <div key={cat} className='inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded'>
                 {cat}
-                <button
+                <MyButton
                   onClick={() => setEntry({
                     ...entry,
                     ent_categories: entry.ent_categories.filter(c => c !== cat)
                   })}
-                  className='text-blue-600 hover:text-blue-900 font-bold'
+                  overrideClass='h-auto md:h-auto px-0 md:px-0 bg-transparent hover:bg-transparent text-blue-600 hover:text-blue-900 font-bold'
                 >
                   ×
-                </button>
+                </MyButton>
               </div>
             ))}
           </div>
-          <select
+          <MySelect
             onChange={(e) => {
               if (e.target.value && !entry.ent_categories.includes(e.target.value)) {
                 setEntry({
@@ -137,81 +141,81 @@ export default function AdminEntryEditPage() {
               }
               e.target.value = ''
             }}
-            className='px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            overrideClass='w-auto md:w-auto h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
           >
             <option value=''>Add category...</option>
             {availableCategories.map((cat) => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
-          </select>
+          </MySelect>
         </div>
 
         <div>
           <label className='block text-sm font-semibold text-gray-900 mb-2'>Source URL</label>
-          <input
+          <MyInput
             type='url'
             value={entry.ent_source_url || ''}
             onChange={(e) => setEntry({ ...entry, ent_source_url: e.target.value || null })}
-            className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+            overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
           />
         </div>
 
         <div className='grid grid-cols-2 gap-4'>
           <div>
             <label className='block text-sm font-semibold text-gray-900 mb-2'>Article Date</label>
-            <input
+            <MyInput
               type='date'
               value={entry.ent_article_date || ''}
               onChange={(e) => setEntry({ ...entry, ent_article_date: e.target.value || null })}
-              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+              overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
           <div>
             <label className='block text-sm font-semibold text-gray-900 mb-2'>Country</label>
-            <input
+            <MyInput
               type='text'
               value={entry.ent_country || ''}
               onChange={(e) => setEntry({ ...entry, ent_country: e.target.value || null })}
               placeholder='e.g., United States, UK'
-              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+              overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
           <div>
             <label className='block text-sm font-semibold text-gray-900 mb-2'>Author</label>
-            <input
+            <MyInput
               type='text'
               value={entry.ent_author || ''}
               onChange={(e) => setEntry({ ...entry, ent_author: e.target.value || null })}
               placeholder='e.g., John Smith'
-              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+              overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
           <div>
             <label className='block text-sm font-semibold text-gray-900 mb-2'>Publication</label>
-            <input
+            <MyInput
               type='text'
               value={entry.ent_publication || ''}
               onChange={(e) => setEntry({ ...entry, ent_publication: e.target.value || null })}
               placeholder='e.g., BBC News, Reuters'
-              className='w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+              overrideClass='w-full h-auto md:h-auto px-4 md:px-4 py-2 rounded border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
         </div>
 
         <div className='flex gap-2'>
-          <button
+          <MyButton
             onClick={handleSave}
             disabled={saving}
-            className='px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50'
+            overrideClass='h-auto md:h-auto px-6 md:px-6 py-2 rounded bg-blue-600 hover:bg-blue-700 disabled:opacity-50'
           >
             {saving ? 'Saving...' : 'Save'}
-          </button>
-          <button
+          </MyButton>
+          <MyButton
             onClick={() => router.push(`/${adminSecret}/dashboard/entries/${entid}`)}
-            className='px-6 py-2 bg-gray-300 text-gray-900 rounded hover:bg-gray-400'
+            overrideClass='h-auto md:h-auto px-6 md:px-6 py-2 rounded bg-gray-300 hover:bg-gray-400 text-gray-900'
           >
             Cancel
-          </button>
+          </MyButton>
         </div>
       </div>
 
@@ -224,15 +228,15 @@ export default function AdminEntryEditPage() {
                 <div className='text-gray-900'>{arg.arg_text}</div>
                 <div className='text-xs text-gray-500'>Relevance: {arg.arg_relevance}</div>
               </div>
-              <button
+              <MyButton
                 onClick={async () => {
                   await deleteArgument(arg.arg_argid, 'AdminEntryEditPage')
                   setArguments(arguments_.filter(a => a.arg_argid !== arg.arg_argid))
                 }}
-                className='text-red-600 hover:text-red-900 ml-2'
+                overrideClass='h-auto md:h-auto px-0 md:px-0 ml-2 bg-transparent hover:bg-transparent text-red-600 hover:text-red-900'
               >
                 Delete
-              </button>
+              </MyButton>
             </div>
           ))}
         </div>
@@ -249,44 +253,44 @@ export default function AdminEntryEditPage() {
                   {source.src_url}
                 </a>
               </div>
-              <button
+              <MyButton
                 onClick={async () => {
                   await deleteSource(source.src_srcid, 'AdminEntryEditPage')
                   setSources(sources.filter(s => s.src_srcid !== source.src_srcid))
                 }}
-                className='text-red-600 hover:text-red-900 ml-2 shrink-0'
+                overrideClass='h-auto md:h-auto px-0 md:px-0 ml-2 shrink-0 bg-transparent hover:bg-transparent text-red-600 hover:text-red-900'
               >
                 Delete
-              </button>
+              </MyButton>
             </div>
           ))}
         </div>
       </div>
 
       <div className='border-t pt-6'>
-        <button
+        <MyButton
           onClick={() => setShowDeleteConfirm(true)}
-          className='px-6 py-2 bg-red-600 text-white rounded hover:bg-red-700'
+          overrideClass='h-auto md:h-auto px-6 md:px-6 py-2 rounded bg-red-600 hover:bg-red-700'
         >
           Delete Entry
-        </button>
+        </MyButton>
 
         {showDeleteConfirm && (
           <div className='mt-4 p-4 bg-red-50 border border-red-200 rounded'>
             <p className='text-red-900 mb-4'>Are you sure? This will delete the entry and all its arguments and sources.</p>
             <div className='flex gap-2'>
-              <button
+              <MyButton
                 onClick={handleDelete}
-                className='px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700'
+                overrideClass='h-auto md:h-auto px-4 md:px-4 py-2 rounded bg-red-600 hover:bg-red-700'
               >
                 Yes, Delete
-              </button>
-              <button
+              </MyButton>
+              <MyButton
                 onClick={() => setShowDeleteConfirm(false)}
-                className='px-4 py-2 bg-gray-300 rounded hover:bg-gray-400'
+                overrideClass='h-auto md:h-auto px-4 md:px-4 py-2 rounded bg-gray-300 hover:bg-gray-400'
               >
                 Cancel
-              </button>
+              </MyButton>
             </div>
           </div>
         )}
