@@ -1,8 +1,6 @@
 const config = {
   transpilePackages: ['nextjs-shared'],
-  env: {
-    POSTGRES_URL: process.env.POSTGRES_URL
-  },
+  serverExternalPackages: ['pg', '@neondatabase/serverless'],
   logging: {
     fetches: { fullUrl: false }
   }

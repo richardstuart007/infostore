@@ -1,13 +1,12 @@
 {
   "name": "infostore",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "locallocal": "copy /Y .env.locallocal .env && next dev --turbopack --port 3040",
-    "localdev": "copy /Y .env.localdev .env && next dev --turbopack --port 3041",
-    "localprod": "copy /Y .env.localprod .env && next dev --turbopack --port 3042"
+    "locallocal": "copy /Y .env.locallocal .env && next dev --turbopack --port 4060",
+    "localprod": "copy /Y .env.localprod .env && next dev --turbopack --port 4062"
   },
   "dependencies": {
     "@heroicons/react": "2.2.0",
