@@ -3,6 +3,7 @@ import { fetchArgumentsByEntry } from '@/src/lib/arguments'
 import { fetchSourcesByEntry } from '@/src/lib/sources'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { MyBackHomeNav } from 'nextjs-shared/MyBackHomeNav'
 
 export default async function AdminEntryDetailPage({
   params
@@ -26,9 +27,12 @@ export default async function AdminEntryDetailPage({
     <div className='max-w-4xl mx-auto space-y-8'>
       <div className='flex items-start justify-between'>
         <div>
-          <Link href={`/${admin_secret}/dashboard/entries`} className='text-blue-600 hover:underline mb-4 inline-block'>
-            ← Back to Entries
-          </Link>
+          <MyBackHomeNav
+            backPath={`/${admin_secret}/dashboard/entries`}
+            backLabel='Back to Entries'
+            containerClass='flex gap-3 mb-4'
+            linkClass='text-blue-600 hover:underline'
+          />
           <h1 className='text-3xl font-bold mt-2'>{entry.ent_title}</h1>
         </div>
         <div className='flex gap-2'>

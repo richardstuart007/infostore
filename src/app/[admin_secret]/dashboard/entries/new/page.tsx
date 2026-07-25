@@ -7,11 +7,11 @@ import { createSource } from '@/src/lib/sources'
 import { fetchDistinctCategories } from '@/src/lib/categories'
 import { normalizeCategory } from '@/src/lib/utils'
 import { useParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { MyInput } from 'nextjs-shared/MyInput'
 import { MyTextarea } from 'nextjs-shared/MyTextarea'
 import MySelect from 'nextjs-shared/MySelect'
 import { MyButton } from 'nextjs-shared/MyButton'
+import { MyBackHomeNav } from 'nextjs-shared/MyBackHomeNav'
 
 interface AnalysisResult {
   title: string
@@ -143,9 +143,11 @@ export default function AdminNewEntryPage() {
   return (
     <div className='max-w-4xl mx-auto space-y-8'>
       <div className='flex items-center justify-between'>
-        <Link href={`/${adminSecret}/dashboard/entries`} className='text-blue-600 hover:underline'>
-          ← Back to Entries
-        </Link>
+        <MyBackHomeNav
+          backPath={`/${adminSecret}/dashboard/entries`}
+          backLabel='Back to Entries'
+          linkClass='text-blue-600 hover:underline'
+        />
         <h1 className='text-3xl font-bold'>New Entry</h1>
       </div>
 

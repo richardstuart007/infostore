@@ -6,7 +6,6 @@ import { fetchArgumentsByEntry, createArgument, updateArgument, deleteArgument }
 import { fetchSourcesByEntry, createSource, updateSource, deleteSource } from '@/src/lib/sources'
 import { fetchDistinctCategories } from '@/src/lib/categories'
 import { normalizeCategory } from '@/src/lib/utils'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import type { EntryRow } from '@/src/lib/entries'
 import type { ArgumentRow } from '@/src/lib/arguments'
@@ -15,6 +14,7 @@ import { MyInput } from 'nextjs-shared/MyInput'
 import { MyTextarea } from 'nextjs-shared/MyTextarea'
 import MySelect from 'nextjs-shared/MySelect'
 import { MyButton } from 'nextjs-shared/MyButton'
+import { MyBackHomeNav } from 'nextjs-shared/MyBackHomeNav'
 
 export default function EntryEditPage({ params }: { params: Promise<{ ent_entid: string }> }) {
   const [entid, setEntid] = useState<number | null>(null)
@@ -88,9 +88,11 @@ export default function EntryEditPage({ params }: { params: Promise<{ ent_entid:
   return (
     <div className='max-w-4xl mx-auto space-y-8'>
       <div className='flex items-center justify-between'>
-        <Link href={`/dashboard/entries/${entid}`} className='text-blue-600 hover:underline'>
-          ← Back to Entry
-        </Link>
+        <MyBackHomeNav
+          backPath={`/dashboard/entries/${entid}`}
+          backLabel='Back to Entry'
+          linkClass='text-blue-600 hover:underline'
+        />
         <h1 className='text-3xl font-bold'>Edit Entry</h1>
       </div>
 
