@@ -1,8 +1,5 @@
 # infostore — Claude guidance
 
-## nextjs-shared reference
-Read `node_modules/nextjs-shared/CONSUMING_PROJECTS.md` before implementing any feature from nextjs-shared. It contains all component APIs, database function signatures, coding conventions, and setup instructions.
-
 ## Purpose
 
 InfoStore is a database of documented examples of harmful societal actions. Users can browse entries, submit new entries via URL (AI-assisted extraction using Ollama), attach arguments with relevance scores, and link source URLs. An admin route provides the same capabilities behind a secret URL segment.
@@ -66,11 +63,3 @@ Env files: `.env.locallocal` and `.env.localprod`. The selected env is copied to
 - Admin access is via a dynamic route segment `[admin_secret]` — the secret value comes from an env var
 - Duplicate URL detection runs on entry creation (`checkDuplicateUrl()`)
 
-## Schema file
-
-`scripts/schema.sql` is the single source of truth for the database structure. Every new table and index must be added here.
-
-## Silent file updates — never ask permission
-
-**PLAN.md and CHANGES.md are always updated silently.**  
-Never ask before checking off a step in `.claude/PLAN.md` or appending to `.claude/CHANGES.md`. These are mechanical parts of execution — no confirmation needed.
