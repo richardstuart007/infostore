@@ -1,9 +1,9 @@
 import { fetchEntryById } from '@/src/lib/entries'
 import { fetchArgumentsByEntry } from '@/src/lib/arguments'
 import { fetchSourcesByEntry } from '@/src/lib/sources'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { MyBackHomeNav } from 'nextjs-shared/MyBackHomeNav'
+import { MyLink } from 'nextjs-shared/MyLink'
 
 export default async function EntryDetailPage({
   params
@@ -36,12 +36,16 @@ export default async function EntryDetailPage({
           <h1 className='text-3xl font-bold mt-2'>{entry.ent_title}</h1>
         </div>
         <div className='flex gap-2'>
-          <Link
-            href={`/dashboard/entries/${entid}/edit`}
-            className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'
+          <MyLink
+            href={{
+              pathname: `/dashboard/entries/${entid}/edit`,
+              reference: 'edit-entry',
+              segment: String(entid)
+            }}
+            overrideClass='h-auto md:h-auto px-4 md:px-4 py-2 rounded bg-blue-600 hover:bg-blue-700'
           >
             Edit
-          </Link>
+          </MyLink>
         </div>
       </div>
 

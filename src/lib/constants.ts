@@ -1,0 +1,2 @@
+export const ENTRIES_ITEMS_PER_PAGE = 20
+export const RECENT_ENTRIES_LIMIT = 5

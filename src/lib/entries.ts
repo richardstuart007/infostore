@@ -7,7 +7,10 @@ import { table_delete } from 'nextjs-shared/table_delete'
 import { table_count } from 'nextjs-shared/table_count'
 import { table_query } from 'nextjs-shared/table_query'
 import { write_logging } from 'nextjs-shared/write_logging'
-import type { WriteColumnValuePair } from 'nextjs-shared/structures'
+import { fetchFiltered } from 'nextjs-shared/fetchFiltered'
+import { fetchTotalPages } from 'nextjs-shared/fetchTotalPages'
+import type { WriteColumnValuePair, Filter } from 'nextjs-shared/structures'
+import { ENTRIES_ITEMS_PER_PAGE, RECENT_ENTRIES_LIMIT } from './constants'
 
 export interface EntryRow {
   ent_entid: number
@@ -21,21 +24,102 @@ export interface EntryRow {
   ent_publication: string | null
 }
 
+export type EntryFilters = {
+  searchTerm?: string
+  categories?: string[]
+  countries?: string[]
+  dateFrom?: string
+  dateTo?: string
+}
+
 //----------------------------------------------------------------------------------
-//  fetchAllEntries — fetch all entries
+//  buildEntryFilters — EntryFilters -> Filter[], only including filters actually set
 //----------------------------------------------------------------------------------
-export async function fetchAllEntries(caller: string): Promise<EntryRow[]> {
+function buildEntryFilters(filters: EntryFilters): Filter[] {
+  const result: Filter[] = []
+  if (filters.searchTerm) {
+    result.push({ column: 'ent_title', operator: 'LIKE', value: filters.searchTerm })
+  }
+  if (filters.categories && filters.categories.length > 0) {
+    result.push({ column: 'ent_categories', operator: 'ARRAY_OVERLAP', value: filters.categories })
+  }
+  if (filters.countries && filters.countries.length > 0) {
+    result.push({ column: 'ent_country', operator: 'IN', value: filters.countries })
+  }
+  if (filters.dateFrom) {
+    result.push({ column: 'ent_article_date', operator: '>=', value: filters.dateFrom })
+  }
+  if (filters.dateTo) {
+    result.push({ column: 'ent_article_date', operator: '<=', value: filters.dateTo })
+  }
+  return result
+}
+
+//----------------------------------------------------------------------------------
+//  fetchFilteredEntries — rows for the current page of a filtered entries list
+//----------------------------------------------------------------------------------
+export async function fetchFilteredEntries(
+  filters: EntryFilters,
+  page: number,
+  caller: string,
+  itemsPerPage: number = ENTRIES_ITEMS_PER_PAGE
+): Promise<EntryRow[]> {
+  const offset = (page - 1) * itemsPerPage
+  const rows = await fetchFiltered({
+    caller,
+    table: 'tent_entries',
+    filters: buildEntryFilters(filters),
+    orderBy: 'ent_entid DESC',
+    limit: itemsPerPage,
+    offset
+  })
+  return rows as EntryRow[]
+}
+
+//----------------------------------------------------------------------------------
+//  getEntriesPageCount — total page count for fetchFilteredEntries' same filter set
+//----------------------------------------------------------------------------------
+export async function getEntriesPageCount(
+  filters: EntryFilters,
+  caller: string,
+  itemsPerPage: number = ENTRIES_ITEMS_PER_PAGE
+): Promise<number> {
+  return fetchTotalPages({
+    caller,
+    table: 'tent_entries',
+    filters: buildEntryFilters(filters),
+    items_per_page: itemsPerPage
+  })
+}
+
+//----------------------------------------------------------------------------------
+//  fetchRecentEntries — most recent entries for a dashboard widget
+//----------------------------------------------------------------------------------
+export async function fetchRecentEntries(caller: string): Promise<EntryRow[]> {
+  const rows = await fetchFiltered({
+    caller,
+    table: 'tent_entries',
+    orderBy: 'ent_entid DESC',
+    limit: RECENT_ENTRIES_LIMIT
+  })
+  return rows as EntryRow[]
+}
+
+//----------------------------------------------------------------------------------
+//  fetchDistinctCountries — get all unique countries across entries
+//----------------------------------------------------------------------------------
+export async function fetchDistinctCountries(caller: string): Promise<string[]> {
   try {
-    const rows = await table_fetch({
+    const result = await table_query({
       caller,
-      table: 'tent_entries',
-      skipCache: false
+      query: `SELECT DISTINCT ent_country FROM tent_entries WHERE ent_country IS NOT NULL ORDER BY ent_country`,
+      params: []
     })
-    return rows as EntryRow[]
+    return result.map((row: { ent_country: string }) => row.ent_country).filter(Boolean)
   } catch (error) {
     await write_logging({
-      lg_functionname: 'fetchAllEntries',
-      lg_msg: 'Failed to fetch entries: ' + (error as Error).message,
+      lg_functionname: 'fetchDistinctCountries',
+      lg_msg: 'Failed to fetch countries: ' + (error as Error).message,
       lg_caller: caller,
       lg_severity: 'E'
     })

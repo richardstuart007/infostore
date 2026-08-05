@@ -1,14 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { fetchAllEntries, deleteEntry } from '@/src/lib/entries'
+import { fetchFilteredEntries, getEntriesPageCount, deleteEntry, fetchDistinctCountries } from '@/src/lib/entries'
+import { fetchDistinctCategories } from '@/src/lib/categories'
 import { useParams } from 'next/navigation'
-import Link from 'next/link'
 import type { EntryRow } from '@/src/lib/entries'
 import { MyInput } from 'nextjs-shared/MyInput'
 import { MyButton } from 'nextjs-shared/MyButton'
+import { MyLink } from 'nextjs-shared/MyLink'
 import { MyConfirmDialog, type ConfirmDialogInt } from 'nextjs-shared/MyConfirmDialog'
 import MyCheckBox from 'nextjs-shared/MyCheckbox'
+import MyPaginationFooter from 'nextjs-shared/MyPaginationFooter'
+import { ENTRIES_ITEMS_PER_PAGE } from '@/src/lib/constants'
 
 const CONFIRM_DIALOG_INITIAL: ConfirmDialogInt = {
   isOpen: false,
@@ -24,18 +27,58 @@ export default function AdminEntriesListPage() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+  const [selectedCountries, setSelectedCountries] = useState<string[]>([])
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [confirmDialog, setConfirmDialog] = useState<ConfirmDialogInt>(CONFIRM_DIALOG_INITIAL)
+  const [allCategories, setAllCategories] = useState<string[]>([])
+  const [allCountries, setAllCountries] = useState<string[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [rowsPerPage, setRowsPerPage] = useState(ENTRIES_ITEMS_PER_PAGE)
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
-    async function load() {
-      const data = await fetchAllEntries('AdminEntriesListPage')
-      setEntries(data)
-      setLoading(false)
+    async function loadOptions() {
+      const [cats, countries] = await Promise.all([
+        fetchDistinctCategories('AdminEntriesListPage'),
+        fetchDistinctCountries('AdminEntriesListPage')
+      ])
+      setAllCategories(cats)
+      setAllCountries(countries)
     }
-    load()
+    loadOptions()
   }, [])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [searchTerm, selectedCategories, selectedCountries, dateFrom, dateTo])
+
+  useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+
+    async function load() {
+      const filters = {
+        searchTerm: searchTerm || undefined,
+        categories: selectedCategories.length > 0 ? selectedCategories : undefined,
+        countries: selectedCountries.length > 0 ? selectedCountries : undefined,
+        dateFrom: dateFrom || undefined,
+        dateTo: dateTo || undefined
+      }
+      const [rows, pages] = await Promise.all([
+        fetchFilteredEntries(filters, currentPage, 'AdminEntriesListPage', rowsPerPage),
+        getEntriesPageCount(filters, 'AdminEntriesListPage', rowsPerPage)
+      ])
+      if (!cancelled) {
+        setEntries(rows)
+        setTotalPages(pages)
+        setLoading(false)
+      }
+    }
+
+    load()
+    return () => { cancelled = true }
+  }, [searchTerm, selectedCategories, selectedCountries, dateFrom, dateTo, currentPage, rowsPerPage])
 
   async function handleDelete(entid: number) {
     const success = await deleteEntry(entid, 'AdminEntriesListPage')
@@ -59,23 +102,7 @@ export default function AdminEntriesListPage() {
     })
   }
 
-  const allCategories = [...new Set(entries.flatMap(e => e.ent_categories))].sort()
-  const allCountries = [...new Set(entries.map(e => e.ent_country).filter(Boolean))].sort() as string[]
-
-  const [selectedCountries, setSelectedCountries] = useState<string[]>([])
-
-  const filtered = entries.filter((entry) => {
-    const matchesSearch = entry.ent_title.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategories = selectedCategories.length === 0 ||
-      selectedCategories.some(cat => entry.ent_categories.includes(cat))
-    const matchesCountries = selectedCountries.length === 0 ||
-      (entry.ent_country && selectedCountries.includes(entry.ent_country))
-    const matchesDateFrom = !dateFrom || (entry.ent_article_date && entry.ent_article_date >= dateFrom)
-    const matchesDateTo = !dateTo || (entry.ent_article_date && entry.ent_article_date <= dateTo)
-    return matchesSearch && matchesCategories && matchesCountries && matchesDateFrom && matchesDateTo
-  })
-
-  if (loading) {
+  if (loading && entries.length === 0) {
     return <div className='text-center py-8'>Loading...</div>
   }
 
@@ -83,9 +110,12 @@ export default function AdminEntriesListPage() {
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
         <h1 className='text-3xl font-bold'>Entries</h1>
-        <Link href={`/${adminSecret}/dashboard/entries/new`} className='px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>
+        <MyLink
+          href={{ pathname: `/${adminSecret}/dashboard/entries/new`, reference: 'new-entry' }}
+          overrideClass='h-auto md:h-auto px-4 md:px-4 py-2 rounded bg-blue-600 hover:bg-blue-700'
+        >
           + New Entry
-        </Link>
+        </MyLink>
       </div>
 
       <div className='space-y-4'>
@@ -148,7 +178,7 @@ export default function AdminEntriesListPage() {
         </div>
       </div>
 
-      {filtered.length === 0 ? (
+      {entries.length === 0 ? (
         <p className='text-gray-500 py-8'>No entries found</p>
       ) : (
         <div className='overflow-x-auto'>
@@ -163,7 +193,7 @@ export default function AdminEntriesListPage() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((entry) => (
+              {entries.map((entry) => (
                 <tr key={entry.ent_entid} className='border-b border-gray-200 hover:bg-gray-50'>
                   <td className='px-4 py-3'>{entry.ent_title}</td>
                   <td className='px-4 py-3 text-sm'>{entry.ent_article_date || '-'}</td>
@@ -178,12 +208,16 @@ export default function AdminEntriesListPage() {
                     </div>
                   </td>
                   <td className='px-4 py-3 text-center space-x-2'>
-                    <Link
-                      href={`/${adminSecret}/dashboard/entries/${entry.ent_entid}`}
-                      className='text-blue-600 hover:underline'
+                    <MyLink
+                      href={{
+                        pathname: `/${adminSecret}/dashboard/entries/${entry.ent_entid}`,
+                        reference: 'edit-entry',
+                        segment: String(entry.ent_entid)
+                      }}
+                      overrideClass='h-auto md:h-auto px-0 md:px-0 bg-transparent hover:bg-transparent text-blue-600 hover:underline'
                     >
                       Edit
-                    </Link>
+                    </MyLink>
                     <MyButton
                       onClick={() => openDeleteConfirm(entry)}
                       overrideClass='h-auto md:h-auto px-0 md:px-0 bg-transparent hover:bg-transparent text-red-600 hover:underline'
@@ -196,6 +230,16 @@ export default function AdminEntriesListPage() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {totalPages > 1 && (
+        <MyPaginationFooter
+          totalPages={totalPages}
+          statecurrentPage={currentPage}
+          setStateCurrentPage={setCurrentPage}
+          rowsPerPage={rowsPerPage}
+          setRowsPerPage={(v) => { setRowsPerPage(v); setCurrentPage(1) }}
+        />
       )}
 
       <MyConfirmDialog confirmDialog={confirmDialog} setConfirmDialog={setConfirmDialog} />

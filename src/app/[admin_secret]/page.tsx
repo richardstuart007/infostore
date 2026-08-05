@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import { MyLink } from 'nextjs-shared/MyLink'
 
 export default async function AdminHomePage({
   params
@@ -13,9 +13,12 @@ export default async function AdminHomePage({
       <div className='bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800'>
         Admin access verified
       </div>
-      <Link href={`/${admin_secret}/dashboard`} className='inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700'>
+      <MyLink
+        href={{ pathname: `/${admin_secret}/dashboard`, reference: 'go-to-dashboard' }}
+        overrideClass='h-auto md:h-auto px-4 md:px-4 py-2 inline-block rounded bg-blue-600 hover:bg-blue-700'
+      >
         Go to Dashboard →
-      </Link>
+      </MyLink>
     </div>
   )
 }

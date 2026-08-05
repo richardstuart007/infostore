@@ -1,6 +1,7 @@
 import OwnerPage from 'nextjs-shared/OwnerPage'
 import OwnerTableLogging from 'nextjs-shared/OwnerTableLogging'
 import OwnerTableCache from 'nextjs-shared/OwnerTableCache'
+import OwnerTableSessionStorage from 'nextjs-shared/OwnerTableSessionStorage'
 
 export default function Page() {
   return (
@@ -8,6 +9,7 @@ export default function Page() {
       tabs={[
         { label: 'Logging', content: <OwnerTableLogging /> },
         { label: 'Cache', content: <OwnerTableCache /> },
+        { label: 'Session Storage', content: <OwnerTableSessionStorage /> },
       ]}
     />
   )
