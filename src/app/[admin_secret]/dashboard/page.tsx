@@ -1,3 +1,13 @@
+//==============================================================================================
+//  1) DESCRIPTION
+//    AdminDashboardPage — the admin dashboard overview (admin mirror of DashboardPage):
+//    total entry count plus the five most recent entries, with links prefixed by the secret
+//    URL segment.
+//
+//    Parameters:
+//      params — route params promise resolving to { admin_secret } (the secret URL segment)
+//==============================================================================================
+
 import { fetchEntriesCount, fetchRecentEntries } from '@/src/lib/entries'
 import { MyLink } from 'nextjs-shared/MyLink'
 

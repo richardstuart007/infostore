@@ -18,13 +18,23 @@ export interface ArgumentRow {
 //----------------------------------------------------------------------------------
 export async function fetchArgumentsByEntry(entid: number, caller: string): Promise<ArgumentRow[]> {
   try {
-    const rows = await table_fetch({
+    const result = await table_fetch({
       caller,
       table: 'targ_arguments',
       whereColumnValuePairs: [{ column: 'arg_entid', value: entid, operator: '=' }],
       orderBy: 'arg_relevance DESC',
       skipCache: false
     })
+    if (!result.ok) {
+      await write_logging({
+        lg_functionname: 'fetchArgumentsByEntry',
+        lg_msg: 'Failed to fetch arguments: ' + result.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return []
+    }
+    const rows = result.data
     return rows as ArgumentRow[]
   } catch (error) {
     await write_logging({
@@ -56,7 +66,16 @@ export async function createArgument(
         { column: 'arg_relevance', value: relevance }
       ]
     })
-    return (result[0] as ArgumentRow) || null
+    if (!result.ok) {
+      await write_logging({
+        lg_functionname: 'createArgument',
+        lg_msg: 'Failed to create argument: ' + result.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return null
+    }
+    return (result.data[0] as ArgumentRow) || null
   } catch (error) {
     await write_logging({
       lg_functionname: 'createArgument',
@@ -87,7 +106,16 @@ export async function updateArgument(
       ],
       whereColumnValuePairs: [{ column: 'arg_argid', value: argid }]
     })
-    return (result[0] as ArgumentRow) || null
+    if (!result.ok) {
+      await write_logging({
+        lg_functionname: 'updateArgument',
+        lg_msg: 'Failed to update argument: ' + result.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return null
+    }
+    return (result.data[0] as ArgumentRow) || null
   } catch (error) {
     await write_logging({
       lg_functionname: 'updateArgument',
@@ -104,11 +132,20 @@ export async function updateArgument(
 //----------------------------------------------------------------------------------
 export async function deleteArgument(argid: number, caller: string): Promise<boolean> {
   try {
-    await table_delete({
+    const deleted = await table_delete({
       caller,
       table: 'targ_arguments',
       whereColumnValuePairs: [{ column: 'arg_argid', value: argid, operator: '=' }]
     })
+    if (!deleted.ok) {
+      await write_logging({
+        lg_functionname: 'deleteArgument',
+        lg_msg: 'Failed to delete argument: ' + deleted.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return false
+    }
     return true
   } catch (error) {
     await write_logging({

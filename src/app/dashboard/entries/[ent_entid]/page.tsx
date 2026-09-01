@@ -1,3 +1,13 @@
+//==============================================================================================
+//  1) DESCRIPTION
+//    EntryDetailPage — the public /dashboard/entries/[ent_entid] detail view: entry
+//    metadata, arguments ordered by relevance, and source links. Calls notFound() when the
+//    entry id doesn't resolve.
+//
+//    Parameters:
+//      params — route params promise resolving to { ent_entid } (the entry id as a string)
+//==============================================================================================
+
 import { fetchEntryById } from '@/src/lib/entries'
 import { fetchArgumentsByEntry } from '@/src/lib/arguments'
 import { fetchSourcesByEntry } from '@/src/lib/sources'

@@ -1,3 +1,14 @@
+//==============================================================================================
+//  1) DESCRIPTION
+//    AdminDashboardLayout — chrome for the admin dashboard route tree: an "InfoStore Admin"
+//    header with Dashboard / Entries nav links (secret-segment-prefixed), above the routed
+//    content in a centred max-w-7xl column inside a <Suspense> boundary.
+//
+//    Parameters:
+//      children — the routed admin dashboard page content
+//      params   — route params promise resolving to { admin_secret } (the secret URL segment)
+//==============================================================================================
+
 import { Suspense } from 'react'
 
 export default async function AdminDashboardLayout({

@@ -19,12 +19,22 @@ export interface SourceRow {
 //----------------------------------------------------------------------------------
 export async function fetchSourcesByEntry(entid: number, caller: string): Promise<SourceRow[]> {
   try {
-    const rows = await table_fetch({
+    const result = await table_fetch({
       caller,
       table: 'tsrc_sources',
       whereColumnValuePairs: [{ column: 'src_entid', value: entid, operator: '=' }],
       skipCache: false
     })
+    if (!result.ok) {
+      await write_logging({
+        lg_functionname: 'fetchSourcesByEntry',
+        lg_msg: 'Failed to fetch sources: ' + result.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return []
+    }
+    const rows = result.data
     return rows as SourceRow[]
   } catch (error) {
     await write_logging({
@@ -60,7 +70,16 @@ export async function createSource(
       table: 'tsrc_sources',
       columnValuePairs: pairs
     })
-    return (result[0] as SourceRow) || null
+    if (!result.ok) {
+      await write_logging({
+        lg_functionname: 'createSource',
+        lg_msg: 'Failed to create source: ' + result.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return null
+    }
+    return (result.data[0] as SourceRow) || null
   } catch (error) {
     await write_logging({
       lg_functionname: 'createSource',
@@ -95,7 +114,16 @@ export async function updateSource(
       columnValuePairs: pairs,
       whereColumnValuePairs: [{ column: 'src_srcid', value: srcid }]
     })
-    return (result[0] as SourceRow) || null
+    if (!result.ok) {
+      await write_logging({
+        lg_functionname: 'updateSource',
+        lg_msg: 'Failed to update source: ' + result.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return null
+    }
+    return (result.data[0] as SourceRow) || null
   } catch (error) {
     await write_logging({
       lg_functionname: 'updateSource',
@@ -112,11 +140,20 @@ export async function updateSource(
 //----------------------------------------------------------------------------------
 export async function deleteSource(srcid: number, caller: string): Promise<boolean> {
   try {
-    await table_delete({
+    const deleted = await table_delete({
       caller,
       table: 'tsrc_sources',
       whereColumnValuePairs: [{ column: 'src_srcid', value: srcid, operator: '=' }]
     })
+    if (!deleted.ok) {
+      await write_logging({
+        lg_functionname: 'deleteSource',
+        lg_msg: 'Failed to delete source: ' + deleted.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return false
+    }
     return true
   } catch (error) {
     await write_logging({

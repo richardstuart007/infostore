@@ -1,6 +1,6 @@
 {
   "name": "infostore",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "@heroicons/react": "2.2.0",
+    "@neondatabase/serverless": "1.1.0",
     "dotenv": "17.4.2",
     "next": "16.2.9",
     "nextjs-shared": "github:richardstuart007/nextjs-shared",
     "pg": "8.21.0",
-    "@neondatabase/serverless": "1.1.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "zod": "4.4.3"

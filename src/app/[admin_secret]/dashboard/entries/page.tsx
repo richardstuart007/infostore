@@ -1,5 +1,19 @@
 'use client'
 
+//==============================================================================================
+//  1) DESCRIPTION
+//    AdminEntriesListPage — the admin /[admin_secret]/dashboard/entries list (richer mirror
+//    of EntriesListPage): title search plus multi-category, multi-country and date-range
+//    filters, server-side paginated, with per-row Edit link and Delete (via MyConfirmDialog),
+//    and a MyPaginationFooter.
+//
+//  2) NOTES
+//    Three effects: one loads category + country filter options; one resets to page 1 on any
+//    filter change; one (guarded by a `cancelled` flag) loads the current page of rows and
+//    the page count together. openDeleteConfirm opens the shared confirm dialog whose
+//    onConfirm calls handleDelete.
+//==============================================================================================
+
 import { useState, useEffect } from 'react'
 import { fetchFilteredEntries, getEntriesPageCount, deleteEntry, fetchDistinctCountries } from '@/src/lib/entries'
 import { fetchDistinctCategories } from '@/src/lib/categories'
@@ -80,15 +94,10 @@ export default function AdminEntriesListPage() {
     return () => { cancelled = true }
   }, [searchTerm, selectedCategories, selectedCountries, dateFrom, dateTo, currentPage, rowsPerPage])
 
-  async function handleDelete(entid: number) {
-    const success = await deleteEntry(entid, 'AdminEntriesListPage')
-    if (success) {
-      setEntries(entries.filter(e => e.ent_entid !== entid))
-    } else {
-      alert('Failed to delete entry')
-    }
-  }
-
+  //----------------------------------------------------------------------------------------------
+  //  openDeleteConfirm — open the shared confirm dialog for one entry; its onConfirm closes
+  //  the dialog then calls handleDelete
+  //----------------------------------------------------------------------------------------------
   function openDeleteConfirm(entry: EntryRow) {
     setConfirmDialog({
       isOpen: true,
@@ -100,6 +109,18 @@ export default function AdminEntriesListPage() {
         await handleDelete(entry.ent_entid)
       }
     })
+  }
+
+  //----------------------------------------------------------------------------------------------
+  //  handleDelete — delete one entry and drop it from local state; alert on failure
+  //----------------------------------------------------------------------------------------------
+  async function handleDelete(entid: number) {
+    const success = await deleteEntry(entid, 'AdminEntriesListPage')
+    if (success) {
+      setEntries(entries.filter(e => e.ent_entid !== entid))
+    } else {
+      alert('Failed to delete entry')
+    }
   }
 
   if (loading && entries.length === 0) {

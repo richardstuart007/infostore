@@ -1,3 +1,9 @@
+//==============================================================================================
+//  1) DESCRIPTION
+//    Page — the /owner index: a nextjs-shared OwnerPage with Logging, Cache and Session
+//    Storage tabs.
+//==============================================================================================
+
 import OwnerPage from 'nextjs-shared/OwnerPage'
 import OwnerTableLogging from 'nextjs-shared/OwnerTableLogging'
 import OwnerTableCache from 'nextjs-shared/OwnerTableCache'

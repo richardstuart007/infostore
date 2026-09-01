@@ -1,3 +1,12 @@
+//==============================================================================================
+//  1) DESCRIPTION
+//    AdminHomePage — the /[admin_secret] landing page: confirms admin access and links
+//    through to the admin dashboard.
+//
+//    Parameters:
+//      params — route params promise resolving to { admin_secret } (the secret URL segment)
+//==============================================================================================
+
 import { MyLink } from 'nextjs-shared/MyLink'
 
 export default async function AdminHomePage({

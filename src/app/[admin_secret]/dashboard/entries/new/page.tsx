@@ -1,5 +1,16 @@
 'use client'
 
+//==============================================================================================
+//  1) DESCRIPTION
+//    AdminNewEntryPage — the admin new-entry form (admin mirror of NewEntryPage): paste a URL
+//    to AI-analyse via /api/analyze, edit the extracted fields, then save the entry plus its
+//    arguments and sources and route to the new entry (secret-segment-prefixed).
+//
+//  2) NOTES
+//    handleAnalyze runs a checkDuplicateUrl (dynamically imported) guard before calling
+//    /api/analyze.
+//==============================================================================================
+
 import { useState, useEffect } from 'react'
 import { createEntry } from '@/src/lib/entries'
 import { createArgument } from '@/src/lib/arguments'
@@ -53,6 +64,10 @@ export default function AdminNewEntryPage() {
     load()
   }, [])
 
+  //----------------------------------------------------------------------------------------------
+  //  handleAnalyze — POST the entered URL to /api/analyze (after a duplicate-URL check) and
+  //  populate the form fields from the returned analysis
+  //----------------------------------------------------------------------------------------------
   async function handleAnalyze() {
     if (!analyzeUrl) return
 
@@ -106,6 +121,10 @@ export default function AdminNewEntryPage() {
     }
   }
 
+  //----------------------------------------------------------------------------------------------
+  //  handleSave — validate, create the entry, then create each argument and source, then
+  //  route to the new entry's detail page
+  //----------------------------------------------------------------------------------------------
   async function handleSave() {
     if (!title || !summary) {
       alert('Title and summary are required')

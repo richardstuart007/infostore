@@ -1,5 +1,17 @@
 'use client'
 
+//==============================================================================================
+//  1) DESCRIPTION
+//    AdminEntryEditPage — the admin entry edit form (admin mirror of EntryEditPage): edit an
+//    entry's fields and save, delete individual arguments / sources inline, or delete the
+//    whole entry (inline confirm) which cascades to its arguments and sources. Routes are
+//    prefixed by the secret URL segment.
+//
+//  2) NOTES
+//    The entry id comes from the useParams() `ent_entid` segment (parsed to int), not a
+//    params promise.
+//==============================================================================================
+
 import { useState, useEffect } from 'react'
 import { fetchEntryById, updateEntry, deleteEntry } from '@/src/lib/entries'
 import { fetchArgumentsByEntry, deleteArgument } from '@/src/lib/arguments'
@@ -54,6 +66,9 @@ export default function AdminEntryEditPage() {
     return <div className='text-center py-8'>Loading...</div>
   }
 
+  //----------------------------------------------------------------------------------------------
+  //  handleSave — normalise categories, update the entry, then route to its detail page
+  //----------------------------------------------------------------------------------------------
   async function handleSave() {
     if (!entry) return
     setSaving(true)
@@ -76,6 +91,10 @@ export default function AdminEntryEditPage() {
     }
   }
 
+  //----------------------------------------------------------------------------------------------
+  //  handleDelete — delete the whole entry (cascades to arguments + sources) and route to
+  //  the entries list
+  //----------------------------------------------------------------------------------------------
   async function handleDelete() {
     const success = await deleteEntry(entid, 'AdminEntryEditPage')
     if (success) {

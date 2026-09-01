@@ -1,3 +1,19 @@
+//==============================================================================================
+//  1) DESCRIPTION
+//    POST /api/analyze — takes a JSON body { url }, asks the local Ollama instance
+//    (qwen3:8b at localhost:11434) to extract structured info about a harmful societal
+//    action from that URL, and returns the parsed JSON.
+//
+//    Parameters:
+//      request — the incoming Request; its JSON body must contain a `url` string
+//
+//    Returns:
+//      Response.json — on success: { title, summary, categories[], arguments[], sources[],
+//                      article_date, country, author, publication }
+//                      on failure: { error } with status 400 (no url), 503 (Ollama down),
+//                      or 500 (empty / unparseable / incomplete analysis)
+//==============================================================================================
+
 export async function POST(request: Request) {
   try {
     const { url } = await request.json()

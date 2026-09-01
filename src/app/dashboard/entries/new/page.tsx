@@ -1,5 +1,17 @@
 'use client'
 
+//==============================================================================================
+//  1) DESCRIPTION
+//    NewEntryPage — the public /dashboard/entries/new form: paste an article URL to
+//    AI-analyse it via /api/analyze, then edit the extracted title / summary / categories /
+//    arguments / sources / metadata and save. On save, creates the entry then its arguments
+//    and sources, and routes to the new entry's detail page.
+//
+//  2) NOTES
+//    handleAnalyze first calls checkDuplicateUrl (dynamically imported) and aborts on a
+//    duplicate. `insertEntry` is an alias import of createEntry.
+//==============================================================================================
+
 import { useState, useEffect } from 'react'
 import { createEntry, createEntry as insertEntry } from '@/src/lib/entries'
 import { createArgument } from '@/src/lib/arguments'
@@ -50,6 +62,10 @@ export default function NewEntryPage() {
     load()
   }, [])
 
+  //----------------------------------------------------------------------------------------------
+  //  handleAnalyze — POST the entered URL to /api/analyze (after a duplicate-URL check) and
+  //  populate the form fields from the returned analysis
+  //----------------------------------------------------------------------------------------------
   async function handleAnalyze() {
     if (!analyzeUrl) return
 
@@ -103,6 +119,10 @@ export default function NewEntryPage() {
     }
   }
 
+  //----------------------------------------------------------------------------------------------
+  //  handleSave — validate, create the entry, then create each argument and source, then
+  //  route to the new entry's detail page
+  //----------------------------------------------------------------------------------------------
   async function handleSave() {
     if (!title || !summary) {
       alert('Title and summary are required')

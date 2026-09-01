@@ -1,5 +1,17 @@
 'use client'
 
+//==============================================================================================
+//  1) DESCRIPTION
+//    EntriesListPage — the public /dashboard/entries list: title search + single-category
+//    filter, server-side paginated via fetchFilteredEntries / getEntriesPageCount, with a
+//    MyPaginationFooter and a link to the new-entry form.
+//
+//  2) NOTES
+//    Three effects: one loads the category filter options; one resets to page 1 whenever a
+//    filter changes; one (guarded by a `cancelled` flag) loads the current page of rows and
+//    the page count together.
+//==============================================================================================
+
 import { useState, useEffect } from 'react'
 import { fetchFilteredEntries, getEntriesPageCount } from '@/src/lib/entries'
 import { fetchDistinctCategories } from '@/src/lib/categories'

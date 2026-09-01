@@ -1,3 +1,9 @@
+//==============================================================================================
+//  1) DESCRIPTION
+//    DashboardPage — the /dashboard overview: total entry count plus the five most recent
+//    entries, each linking to its detail page, and a "View All Entries" link.
+//==============================================================================================
+
 import { fetchEntriesCount, fetchRecentEntries } from '@/src/lib/entries'
 import { MyLink } from 'nextjs-shared/MyLink'
 

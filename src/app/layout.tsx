@@ -1,3 +1,16 @@
+//==============================================================================================
+//  1) DESCRIPTION
+//    RootLayout — the app-wide HTML shell: sets the Geist font variables on <html>, renders
+//    the shared DevLayoutHeader (dev only) above a full-width <main> that wraps every page.
+//
+//    Parameters:
+//      children — the routed page content to render inside <main>
+//
+//  2) NOTES
+//    DB_LOCATION comes from POSTGRES_DATABASE_LOCATION; the DevLayoutHeader only renders
+//    when NEXT_PUBLIC_APPENV_ISDEV === 'true'.
+//==============================================================================================
+
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'

@@ -1,5 +1,15 @@
 'use client'
 
+//==============================================================================================
+//  1) DESCRIPTION
+//    EntryEditPage — the public /dashboard/entries/[ent_entid]/edit form: edit an entry's
+//    fields and save, delete individual arguments / sources inline, or delete the whole
+//    entry (with an inline confirm) which cascades to its arguments and sources.
+//
+//    Parameters:
+//      params — route params promise resolving to { ent_entid } (the entry id as a string)
+//==============================================================================================
+
 import { useState, useEffect } from 'react'
 import { fetchEntryById, updateEntry, deleteEntry } from '@/src/lib/entries'
 import { fetchArgumentsByEntry, createArgument, updateArgument, deleteArgument } from '@/src/lib/arguments'
@@ -55,6 +65,9 @@ export default function EntryEditPage({ params }: { params: Promise<{ ent_entid:
     return <div className='text-center py-8'>Loading...</div>
   }
 
+  //----------------------------------------------------------------------------------------------
+  //  handleSave — normalise categories, update the entry, then route to its detail page
+  //----------------------------------------------------------------------------------------------
   async function handleSave() {
     if (!entry || entid === null) return
     setSaving(true)
@@ -77,6 +90,10 @@ export default function EntryEditPage({ params }: { params: Promise<{ ent_entid:
     }
   }
 
+  //----------------------------------------------------------------------------------------------
+  //  handleDelete — delete the whole entry (cascades to arguments + sources) and route to
+  //  the entries list
+  //----------------------------------------------------------------------------------------------
   async function handleDelete() {
     if (entid === null) return
     const success = await deleteEntry(entid, 'EntryEditPage')

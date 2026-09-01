@@ -1,3 +1,9 @@
+//==============================================================================================
+//  1) DESCRIPTION
+//    HomePage — the public welcome page: a short description of InfoStore and a link
+//    through to /dashboard.
+//==============================================================================================
+
 export default function HomePage() {
   return (
     <div className='max-w-4xl mx-auto'>

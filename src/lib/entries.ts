@@ -65,7 +65,7 @@ export async function fetchFilteredEntries(
   itemsPerPage: number = ENTRIES_ITEMS_PER_PAGE
 ): Promise<EntryRow[]> {
   const offset = (page - 1) * itemsPerPage
-  const rows = await fetchFiltered({
+  const result = await fetchFiltered({
     caller,
     table: 'tent_entries',
     filters: buildEntryFilters(filters),
@@ -73,6 +73,16 @@ export async function fetchFilteredEntries(
     limit: itemsPerPage,
     offset
   })
+  if (!result.ok) {
+    await write_logging({
+      lg_functionname: 'fetchFilteredEntries',
+      lg_msg: 'Failed to fetch filtered entries: ' + result.error,
+      lg_caller: caller,
+      lg_severity: 'E'
+    })
+    return []
+  }
+  const rows = result.data
   return rows as EntryRow[]
 }
 
@@ -84,24 +94,45 @@ export async function getEntriesPageCount(
   caller: string,
   itemsPerPage: number = ENTRIES_ITEMS_PER_PAGE
 ): Promise<number> {
-  return fetchTotalPages({
+  const result = await fetchTotalPages({
     caller,
     table: 'tent_entries',
     filters: buildEntryFilters(filters),
     items_per_page: itemsPerPage
   })
+  if (!result.ok) {
+    await write_logging({
+      lg_functionname: 'getEntriesPageCount',
+      lg_msg: 'Failed to get entries page count: ' + result.error,
+      lg_caller: caller,
+      lg_severity: 'E'
+    })
+    return 0
+  }
+  const pageCount = result.data
+  return pageCount
 }
 
 //----------------------------------------------------------------------------------
 //  fetchRecentEntries — most recent entries for a dashboard widget
 //----------------------------------------------------------------------------------
 export async function fetchRecentEntries(caller: string): Promise<EntryRow[]> {
-  const rows = await fetchFiltered({
+  const result = await fetchFiltered({
     caller,
     table: 'tent_entries',
     orderBy: 'ent_entid DESC',
     limit: RECENT_ENTRIES_LIMIT
   })
+  if (!result.ok) {
+    await write_logging({
+      lg_functionname: 'fetchRecentEntries',
+      lg_msg: 'Failed to fetch recent entries: ' + result.error,
+      lg_caller: caller,
+      lg_severity: 'E'
+    })
+    return []
+  }
+  const rows = result.data
   return rows as EntryRow[]
 }
 
@@ -112,10 +143,20 @@ export async function fetchDistinctCountries(caller: string): Promise<string[]> 
   try {
     const result = await table_query({
       caller,
+      table: 'tent_entries',
       query: `SELECT DISTINCT ent_country FROM tent_entries WHERE ent_country IS NOT NULL ORDER BY ent_country`,
       params: []
     })
-    return result.map((row: { ent_country: string }) => row.ent_country).filter(Boolean)
+    if (!result.ok) {
+      await write_logging({
+        lg_functionname: 'fetchDistinctCountries',
+        lg_msg: 'Failed to fetch countries: ' + result.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return []
+    }
+    return result.data.map((row: { ent_country: string }) => row.ent_country).filter(Boolean)
   } catch (error) {
     await write_logging({
       lg_functionname: 'fetchDistinctCountries',
@@ -132,12 +173,22 @@ export async function fetchDistinctCountries(caller: string): Promise<string[]> 
 //----------------------------------------------------------------------------------
 export async function fetchEntryById(entid: number, caller: string): Promise<EntryRow | null> {
   try {
-    const rows = await table_fetch({
+    const result = await table_fetch({
       caller,
       table: 'tent_entries',
       whereColumnValuePairs: [{ column: 'ent_entid', value: entid, operator: '=' }],
       skipCache: false
     })
+    if (!result.ok) {
+      await write_logging({
+        lg_functionname: 'fetchEntryById',
+        lg_msg: 'Failed to fetch entry: ' + result.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return null
+    }
+    const rows = result.data
     return (rows[0] as EntryRow) || null
   } catch (error) {
     await write_logging({
@@ -155,10 +206,20 @@ export async function fetchEntryById(entid: number, caller: string): Promise<Ent
 //----------------------------------------------------------------------------------
 export async function fetchEntriesCount(caller: string): Promise<number> {
   try {
-    const count = await table_count({
+    const result = await table_count({
       caller,
       table: 'tent_entries'
     })
+    if (!result.ok) {
+      await write_logging({
+        lg_functionname: 'fetchEntriesCount',
+        lg_msg: 'Failed to count entries: ' + result.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return 0
+    }
+    const count = result.data
     return count
   } catch (error) {
     await write_logging({
@@ -189,12 +250,16 @@ export async function checkDuplicateUrl(sourceUrl: string, caller: string): Prom
 //----------------------------------------------------------------------------------
 async function fetchBySourceUrl(sourceUrl: string, caller: string): Promise<EntryRow | null> {
   try {
-    const rows = await table_fetch({
+    const result = await table_fetch({
       caller,
       table: 'tent_entries',
       whereColumnValuePairs: [{ column: 'ent_source_url', value: sourceUrl, operator: '=' }],
       skipCache: true
     })
+    if (!result.ok) {
+      return null
+    }
+    const rows = result.data
     return (rows[0] as EntryRow) || null
   } catch (error) {
     return null
@@ -252,7 +317,16 @@ export async function createEntry(
       table: 'tent_entries',
       columnValuePairs: pairs
     })
-    return (result[0] as EntryRow) || null
+    if (!result.ok) {
+      await write_logging({
+        lg_functionname: 'createEntry',
+        lg_msg: 'Failed to create entry: ' + result.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return null
+    }
+    return (result.data[0] as EntryRow) || null
   } catch (error) {
     await write_logging({
       lg_functionname: 'createEntry',
@@ -307,7 +381,16 @@ export async function updateEntry(
       columnValuePairs: pairs,
       whereColumnValuePairs: [{ column: 'ent_entid', value: entid }]
     })
-    return (result[0] as EntryRow) || null
+    if (!result.ok) {
+      await write_logging({
+        lg_functionname: 'updateEntry',
+        lg_msg: 'Failed to update entry: ' + result.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return null
+    }
+    return (result.data[0] as EntryRow) || null
   } catch (error) {
     await write_logging({
       lg_functionname: 'updateEntry',
@@ -324,23 +407,50 @@ export async function updateEntry(
 //----------------------------------------------------------------------------------
 export async function deleteEntry(entid: number, caller: string): Promise<boolean> {
   try {
-    await table_delete({
+    const argsDeleted = await table_delete({
       caller,
       table: 'targ_arguments',
       whereColumnValuePairs: [{ column: 'arg_entid', value: entid, operator: '=' }]
     })
+    if (!argsDeleted.ok) {
+      await write_logging({
+        lg_functionname: 'deleteEntry',
+        lg_msg: 'Failed to delete entry: ' + argsDeleted.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return false
+    }
 
-    await table_delete({
+    const sourcesDeleted = await table_delete({
       caller,
       table: 'tsrc_sources',
       whereColumnValuePairs: [{ column: 'src_entid', value: entid, operator: '=' }]
     })
+    if (!sourcesDeleted.ok) {
+      await write_logging({
+        lg_functionname: 'deleteEntry',
+        lg_msg: 'Failed to delete entry: ' + sourcesDeleted.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return false
+    }
 
-    await table_delete({
+    const entryDeleted = await table_delete({
       caller,
       table: 'tent_entries',
       whereColumnValuePairs: [{ column: 'ent_entid', value: entid, operator: '=' }]
     })
+    if (!entryDeleted.ok) {
+      await write_logging({
+        lg_functionname: 'deleteEntry',
+        lg_msg: 'Failed to delete entry: ' + entryDeleted.error,
+        lg_caller: caller,
+        lg_severity: 'E'
+      })
+      return false
+    }
 
     return true
   } catch (error) {

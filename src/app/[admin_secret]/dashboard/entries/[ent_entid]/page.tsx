@@ -1,3 +1,13 @@
+//==============================================================================================
+//  1) DESCRIPTION
+//    AdminEntryDetailPage — the admin entry detail view (admin mirror of EntryDetailPage):
+//    entry metadata, arguments by relevance, and source links, with links prefixed by the
+//    secret URL segment. Calls notFound() when the entry id doesn't resolve.
+//
+//    Parameters:
+//      params — route params promise resolving to { admin_secret, ent_entid }
+//==============================================================================================
+
 import { fetchEntryById } from '@/src/lib/entries'
 import { fetchArgumentsByEntry } from '@/src/lib/arguments'
 import { fetchSourcesByEntry } from '@/src/lib/sources'
